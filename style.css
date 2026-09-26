@@ -140,3 +140,26 @@ body {
     color: var(--tg-theme-hint-color, #999);
     font-size: 12px;
 }
+.group-item {
+    background: var(--tg-theme-bg-color, #fff);
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 8px;
+}
+
+.group-name {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.group-id {
+    color: var(--tg-theme-hint-color, #999);
+    font-size: 12px;
+    margin-bottom: 6px;
+}
+
+.group-stats {
+    font-size: 13px;
+    color: var(--tg-theme-text-color, #000);
+}
