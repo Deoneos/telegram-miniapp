@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ANTI_SPAM Bot</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Telegram Web App SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Шапка -->
+        <header class="header">
+            <div class="header-icon">🛡️</div>
+            <h1>ANTI_SPAM Bot</h1>
+            <p class="subtitle">Защита групп от спама и рекламы</p>
+        </header>
+
+        <!-- Приветствие пользователя -->
+        <section class="card user-card">
+            <div class="user-info">
+                <div class="user-avatar" id="user-avatar">👤</div>
+                <div>
+                    <div class="user-name" id="user-name">Загрузка...</div>
+                    <div class="user-id" id="user-id">ID: —</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Кнопка добавления бота -->
+        <section class="card">
+            <h2>➕ Добавить бота в группу</h2>
+            <p class="hint">Нажмите кнопку ниже, выберите свою группу — бот начнёт защищать её от спама.</p>
+            <button class="btn btn-primary" id="add-to-group-btn">
+                Добавить в группу
+            </button>
+        </section>
+
+        <!-- Заглушка для статистики -->
+        <section class="card">
+            <h2>📊 Статистика</h2>
+            <p class="hint">Здесь появится статистика по вашим группам. Пока список пуст.</p>
+            <div class="empty-state" id="groups-list">
+                <p>У вас пока нет групп с ботом</p>
+            </div>
+        </section>
+
+        <!-- Футер -->
+        <footer class="footer">
+            <p>ANTI_SPAM Bot © 2026</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

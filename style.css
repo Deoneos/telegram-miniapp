@@ -1,0 +1,142 @@
+/* Сброс стилей */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--tg-theme-bg-color, #ffffff);
+    color: var(--tg-theme-text-color, #000000);
+    line-height: 1.5;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 16px;
+    padding-bottom: 40px;
+}
+
+/* Шапка */
+.header {
+    text-align: center;
+    padding: 24px 0 16px;
+}
+
+.header-icon {
+    font-size: 48px;
+    margin-bottom: 8px;
+}
+
+.header h1 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.subtitle {
+    color: var(--tg-theme-hint-color, #999);
+    font-size: 14px;
+}
+
+/* Карточки */
+.card {
+    background: var(--tg-theme-secondary-bg-color, #f5f5f5);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 12px;
+}
+
+.card h2 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.hint {
+    color: var(--tg-theme-hint-color, #999);
+    font-size: 13px;
+    margin-bottom: 12px;
+}
+
+/* Пользователь */
+.user-card {
+    display: flex;
+    align-items: center;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.user-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--tg-theme-button-color, #2481cc);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
+}
+
+.user-name {
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.user-id {
+    color: var(--tg-theme-hint-color, #999);
+    font-size: 13px;
+}
+
+/* Кнопки */
+.btn {
+    width: 100%;
+    padding: 12px 16px;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    font-family: inherit;
+}
+
+.btn:active {
+    opacity: 0.7;
+}
+
+.btn-primary {
+    background: var(--tg-theme-button-color, #2481cc);
+    color: var(--tg-theme-button-text-color, #ffffff);
+}
+
+.btn-secondary {
+    background: var(--tg-theme-secondary-bg-color, #eee);
+    color: var(--tg-theme-text-color, #000);
+}
+
+/* Пустое состояние */
+.empty-state {
+    text-align: center;
+    padding: 24px 16px;
+    color: var(--tg-theme-hint-color, #999);
+    font-size: 14px;
+}
+
+/* Футер */
+.footer {
+    text-align: center;
+    padding: 24px 0 8px;
+    color: var(--tg-theme-hint-color, #999);
+    font-size: 12px;
+}
