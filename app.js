@@ -8,7 +8,7 @@ const initData = tg.initData;
 
 // API-эндпоинт бота (пока заглушка)
 // Позже заменим на реальный
-const API_BASE = 'https://ВАШ_ДОМЕН/api';
+const API_BASE = 'https://antispam-api-zakharsakharov.amvera.io';
 
 // === Показываем пользователя ===
 if (user) {
