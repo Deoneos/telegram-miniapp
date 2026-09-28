@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ANTI_SPAM Bot</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Telegram Web App SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
@@ -17,39 +16,85 @@
             <p class="subtitle">Защита групп от спама и рекламы</p>
         </header>
 
-        <!-- Приветствие пользователя -->
+        <!-- Профиль -->
         <section class="card user-card">
+            <div class="user-avatar" id="user-avatar">👤</div>
             <div class="user-info">
-                <div class="user-avatar" id="user-avatar">👤</div>
-                <div>
-                    <div class="user-name" id="user-name">Загрузка...</div>
-                    <div class="user-id" id="user-id">ID: —</div>
-                </div>
+                <div class="user-name" id="user-name">Загрузка...</div>
+                <div class="user-id" id="user-id">ID: —</div>
             </div>
         </section>
 
-        <!-- Кнопка добавления бота -->
+        <!-- Сводная статистика -->
+        <section class="stats-summary" id="stats-summary" style="display:none;">
+            <div class="stat-tile">
+                <div class="stat-icon">📢</div>
+                <div class="stat-value" id="stat-chats">0</div>
+                <div class="stat-label">групп</div>
+            </div>
+            <div class="stat-tile">
+                <div class="stat-icon">🗑</div>
+                <div class="stat-value" id="stat-deleted">0</div>
+                <div class="stat-label">удалено</div>
+            </div>
+            <div class="stat-tile">
+                <div class="stat-icon">⚖️</div>
+                <div class="stat-value" id="stat-bans">0</div>
+                <div class="stat-label">банов</div>
+            </div>
+        </section>
+
+        <!-- Кнопка добавить -->
         <section class="card">
             <h2>➕ Добавить бота в группу</h2>
-            <p class="hint">Нажмите кнопку ниже, выберите свою группу — бот начнёт защищать её от спама.</p>
+            <p class="hint">Нажмите кнопку ниже — бот начнёт защищать вашу группу от спама</p>
             <button class="btn btn-primary" id="add-to-group-btn">
                 Добавить в группу
             </button>
         </section>
 
-        <!-- Заглушка для статистики -->
-        <section class="card">
-            <h2>📊 Статистика</h2>
-            <p class="hint">Здесь появится статистика по вашим группам. Пока список пуст.</p>
-            <div class="empty-state" id="groups-list">
-                <p>У вас пока нет групп с ботом</p>
-            </div>
+        <!-- Заголовок групп -->
+        <h2 class="section-title">📋 Мои группы</h2>
+
+        <!-- Список групп -->
+        <section class="groups-list" id="groups-list">
+            <p style="text-align:center;color:#999;">Загрузка...</p>
         </section>
 
         <!-- Футер -->
         <footer class="footer">
-            <p>ANTI_SPAM Bot © 2026</p>
+            <p>ANTI_SPAM Bot © 2026 · v2.0</p>
         </footer>
+    </div>
+
+    <!-- Модальное окно -->
+    <div class="modal-overlay" id="modal-overlay" style="display:none;">
+        <div class="modal">
+            <button class="modal-close" id="modal-close">✕</button>
+            <div class="modal-header">
+                <div class="modal-icon" id="modal-icon">📢</div>
+                <h3 class="modal-title" id="modal-title">Группа</h3>
+                <p class="modal-subtitle" id="modal-subtitle">ID: —</p>
+            </div>
+            <div class="modal-stats">
+                <div class="modal-stat">
+                    <div class="modal-stat-value" id="modal-deleted">0</div>
+                    <div class="modal-stat-label">Удалено</div>
+                </div>
+                <div class="modal-stat">
+                    <div class="modal-stat-value" id="modal-bans">0</div>
+                    <div class="modal-stat-label">Банов</div>
+                </div>
+                <div class="modal-stat">
+                    <div class="modal-stat-value" id="modal-violations">0</div>
+                    <div class="modal-stat-label">Нарушений</div>
+                </div>
+            </div>
+            <div class="modal-info" id="modal-info"></div>
+            <button class="btn btn-primary" id="modal-open-tg">
+                Открыть в Telegram
+            </button>
+        </div>
     </div>
 
     <script src="app.js"></script>
