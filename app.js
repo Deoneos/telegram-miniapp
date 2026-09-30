@@ -131,15 +131,6 @@ function openGroupModal(chatId, title, chatType, deleted, bans, violations, adde
     document.getElementById('modal-info').innerHTML =
         `📅 Добавлена: ${added || 'неизвестно'}<br>📁 Тип: ${typeText}`;
 
-    // Кнопка "Открыть в Telegram"
-    document.getElementById('modal-open-tg').onclick = () => {
-        // Для групп ID отрицательный: -100XXX
-        // Ссылка: https://t.me/c/XXX/1 — но это требует message_id
-        // Проще: tg://resolve?domain=... но для приватных не работает
-        // Используем tg.openTelegramLink для внешних
-        tg.openTelegramLink(`https://t.me/ANTI_SPAM_MWKbot`);
-    };
-
     // Загружаем график активности
     loadTimelineChart(chatId, 30);
 
