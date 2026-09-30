@@ -414,3 +414,30 @@ body {
     color: var(--tg-theme-hint-color, #999);
     font-size: 12px;
 }
+/* ===== ГРАФИК АКТИВНОСТИ ===== */
+.modal-chart-container {
+    margin-bottom: 16px;
+}
+
+.modal-chart-title {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    text-align: center;
+    color: var(--tg-theme-hint-color, #999);
+}
+
+.modal-chart-wrap {
+    position: relative;
+    height: 220px;
+    width: 100%;
+    background: var(--tg-theme-secondary-bg-color, #f5f5f5);
+    border-radius: 12px;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+.modal-chart-wrap canvas {
+    max-width: 100%;
+    max-height: 100%;
+}
