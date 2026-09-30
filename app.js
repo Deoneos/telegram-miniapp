@@ -10,8 +10,11 @@ tg.setBackgroundColor('bg_color');
 // Пользователь
 const user = tg.initDataUnsafe?.user;
 
+const nameEl = document.getElementById('user-name');
+nameEl.removeAttribute('data-i18n');  // чтобы applyTranslations не перезаписывал
+
 if (user) {
-    document.getElementById('user-name').textContent =
+    nameEl.textContent =
         [user.first_name, user.last_name].filter(Boolean).join(' ') || t('user.placeholder');
     document.getElementById('user-id').textContent = `ID: ${user.id}`;
 
@@ -23,7 +26,7 @@ if (user) {
         avatar.textContent = '';
     }
 } else {
-    document.getElementById('user-name').textContent = t('user.guest');
+    nameEl.textContent = t('user.guest');
     document.getElementById('user-id').textContent = t('user.open_via_tg');
 }
 
