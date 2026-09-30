@@ -162,3 +162,139 @@ window.openGroupModal = openGroupModal;
 // ===== ЗАПУСК =====
 loadGroups();
 tg.ready();
+
+// ===== ГРАФИК АКТИВНОСТИ (Chart.js) =====
+let timelineChart = null;
+
+async function loadTimelineChart(chatId, days = 30) {
+    const canvas = document.getElementById('chart-timeline');
+    if (!canvas || typeof Chart === 'undefined') return;
+
+    // Уничтожаем старый график, если есть
+    if (timelineChart) {
+        timelineChart.destroy();
+        timelineChart = null;
+    }
+
+    try {
+        const response = await fetch(`${API_BASE}/api/timeline?chat_id=${chatId}&days=${days}`);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+
+        const items = data.days || [];
+        const textColor = getComputedStyle(document.body).color;
+
+        if (items.length === 0) {
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#999';
+            ctx.font = '14px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('Нет данных', canvas.width / 2, canvas.height / 2);
+            return;
+        }
+
+        const labels = items.map(d => {
+            const p = d.date.split('-');
+            return `${p[2]}.${p[1]}`;
+        });
+
+        timelineChart = new Chart(canvas.getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: '🗑 Удалено',
+                        data: items.map(d => d.deleted || 0),
+                        borderColor: '#2481cc',
+                        backgroundColor: 'rgba(36, 129, 204, 0.12)',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        pointRadius: 2,
+                        pointHoverRadius: 5,
+                        fill: true,
+                    },
+                    {
+                        label: '⚖️ Баны',
+                        data: items.map(d => d.bans || 0),
+                        borderColor: '#e74c3c',
+                        backgroundColor: 'rgba(231, 76, 60, 0.12)',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        pointRadius: 2,
+                        pointHoverRadius: 5,
+                        fill: true,
+                    },
+                    {
+                        label: '⚠️ Нарушения',
+                        data: items.map(d => d.violations || 0),
+                        borderColor: '#f39c12',
+                        backgroundColor: 'rgba(243, 156, 18, 0.12)',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        pointRadius: 2,
+                        pointHoverRadius: 5,
+                        fill: true,
+                    },
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: { mode: 'index', intersect: false },
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            boxWidth: 12,
+                            padding: 8,
+                            font: { size: 11 },
+                            color: textColor,
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0,0,0,0.85)',
+                        padding: 8,
+                        titleFont: { size: 12 },
+                        bodyFont: { size: 12 },
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: {
+                            font: { size: 10 },
+                            color: textColor,
+                            maxRotation: 0,
+                            autoSkip: true,
+                            maxTicksLimit: 8,
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            font: { size: 10 },
+                            color: textColor,
+                            precision: 0,
+                        },
+                        grid: {
+                            color: 'rgba(128,128,128,0.15)',
+                        }
+                    }
+                }
+            }
+        });
+
+    } catch (e) {
+        console.error('Timeline error:', e);
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#999';
+        ctx.font = '14px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('Не удалось загрузить', canvas.width / 2, canvas.height / 2);
+    }
+}
+
+window.loadTimelineChart = loadTimelineChart;
