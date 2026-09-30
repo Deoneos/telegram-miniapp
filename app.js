@@ -1,18 +1,18 @@
+// ===== API URL =====
+const API_BASE = 'https://antispam-api-zakharsakharov.amvera.io';
+
 // ===== ИНИЦИАЛИЗАЦИЯ =====
 const tg = window.Telegram.WebApp;
 tg.expand();
 tg.setHeaderColor('secondary_bg_color');
 tg.setBackgroundColor('bg_color');
 
-// API URL
-const API_BASE = 'https://antispam-api-zakharsakharov.amvera.io';
-
 // Пользователь
 const user = tg.initDataUnsafe?.user;
 
 if (user) {
     document.getElementById('user-name').textContent =
-        [user.first_name, user.last_name].filter(Boolean).join(' ') || 'Пользователь';
+        [user.first_name, user.last_name].filter(Boolean).join(' ') || t('user.placeholder');
     document.getElementById('user-id').textContent = `ID: ${user.id}`;
 
     if (user.photo_url) {
@@ -23,9 +23,22 @@ if (user) {
         avatar.textContent = '';
     }
 } else {
-    document.getElementById('user-name').textContent = 'Гость';
-    document.getElementById('user-id').textContent = 'Откройте через Telegram';
+    document.getElementById('user-name').textContent = t('user.guest');
+    document.getElementById('user-id').textContent = t('user.open_via_tg');
 }
+
+// Применяем переводы к статике
+applyTranslations();
+
+// ===== ПЕРЕКЛЮЧАТЕЛЬ ЯЗЫКА =====
+document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const lang = btn.getAttribute('data-lang');
+        setLanguage(lang);
+        // Перерисовываем список групп (там динамический контент)
+        if (user && user.id) loadGroups();
+    });
+});
 
 // Кнопка "Добавить в группу"
 document.getElementById('add-to-group-btn').addEventListener('click', () => {
@@ -41,8 +54,8 @@ async function loadGroups() {
         container.innerHTML = `
             <div class="empty-state">
                 <div class="empty-icon">🔒</div>
-                <h3>Откройте через Telegram</h3>
-                <p>Для просмотра групп откройте приложение из бота</p>
+                <h3>${t('groups.locked_title')}</h3>
+                <p>${t('groups.locked_text')}</p>
             </div>
         `;
         return;
@@ -51,10 +64,8 @@ async function loadGroups() {
     try {
         const response = await fetch(`${API_BASE}/api/groups?user_id=${user.id}`);
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
         const data = await response.json();
 
-        // Сводка
         if (data.stats && data.stats.total_chats > 0) {
             summary.style.display = 'grid';
             document.getElementById('stat-chats').textContent = data.stats.total_chats;
@@ -64,25 +75,24 @@ async function loadGroups() {
             summary.style.display = 'none';
         }
 
-        // Пустой список
         if (!data.groups || data.groups.length === 0) {
             container.innerHTML = `
                 <div class="empty-state">
                     <div class="empty-icon">📭</div>
-                    <h3>Нет групп</h3>
-                    <p>Добавьте бота в свою группу через кнопку выше</p>
+                    <h3>${t('groups.empty_title')}</h3>
+                    <p>${t('groups.empty_text')}</p>
                 </div>
             `;
             return;
         }
 
-        // Рендер групп
         container.innerHTML = data.groups.map(g => {
             const initial = (g.title || 'Г').trim()[0].toUpperCase();
+            const title = g.title || t('groups.no_title');
             return `
                 <div class="group-item" onclick="openGroupModal(
                     ${g.telegram_chat_id},
-                    '${(g.title || '').replace(/'/g, "\\'")}',
+                    '${(title).replace(/'/g, "\\'")}',
                     '${g.chat_type || ''}',
                     ${g.deleted_count || 0},
                     ${g.bans_count || 0},
@@ -93,7 +103,7 @@ async function loadGroups() {
                 )">
                     <div class="group-avatar">${initial}</div>
                     <div class="group-content">
-                        <div class="group-name">${g.title || 'Без названия'}</div>
+                        <div class="group-name">${title}</div>
                         <div class="group-stats">
                             <span class="group-stat">🗑 ${g.deleted_count || 0}</span>
                             <span class="group-stat">⚖️ ${g.bans_count || 0}</span>
@@ -110,7 +120,7 @@ async function loadGroups() {
         container.innerHTML = `
             <div class="empty-state">
                 <div class="empty-icon">⚠️</div>
-                <h3>Не удалось загрузить</h3>
+                <h3>${t('groups.error_title')}</h3>
                 <p>${e.message}</p>
             </div>
         `;
@@ -119,21 +129,19 @@ async function loadGroups() {
 
 // ===== МОДАЛЬНОЕ ОКНО =====
 function openGroupModal(chatId, title, chatType, deleted, bans, violations, added, inviteLink, channelLink) {
-    document.getElementById('modal-title').textContent = title || 'Без названия';
+    document.getElementById('modal-title').textContent = title || t('modal.title_default');
     document.getElementById('modal-subtitle').textContent = `ID: ${chatId}`;
     document.getElementById('modal-deleted').textContent = deleted;
     document.getElementById('modal-bans').textContent = bans;
     document.getElementById('modal-violations').textContent = violations;
 
-    // Тип чата
-    let typeText = 'Группа';
-    if (chatType === 'supergroup') typeText = 'Супергруппа';
-    if (chatType === 'channel') typeText = 'Канал';
+    let typeText = t('modal.type_group');
+    if (chatType === 'supergroup') typeText = t('modal.type_supergroup');
+    if (chatType === 'channel') typeText = t('modal.type_channel');
 
     document.getElementById('modal-info').innerHTML =
-        `📅 Добавлена: ${added || 'неизвестно'}<br>📁 Тип: ${typeText}`;
+        `📅 ${t('modal.added')}: ${added || t('modal.unknown')}<br>📁 ${t('modal.type')}: ${typeText}`;
 
-    // Кнопка "Открыть группу"
     const openGroupBtn = document.getElementById('modal-open-group');
     if (inviteLink && inviteLink.startsWith('http')) {
         openGroupBtn.href = inviteLink;
@@ -142,7 +150,6 @@ function openGroupModal(chatId, title, chatType, deleted, bans, violations, adde
         openGroupBtn.style.display = 'none';
     }
 
-    // Кнопка "Открыть канал" (если группа привязана к каналу)
     const openChannelBtn = document.getElementById('modal-open-channel');
     if (channelLink && channelLink.startsWith('http')) {
         openChannelBtn.href = channelLink;
@@ -151,9 +158,7 @@ function openGroupModal(chatId, title, chatType, deleted, bans, violations, adde
         openChannelBtn.style.display = 'none';
     }
 
-    // График активности
     loadTimelineChart(chatId, 30);
-
     document.getElementById('modal-overlay').style.display = 'flex';
 }
 
@@ -162,15 +167,13 @@ function closeGroupModal() {
 }
 
 document.getElementById('modal-close').addEventListener('click', closeGroupModal);
-
 document.getElementById('modal-overlay').addEventListener('click', (e) => {
     if (e.target.id === 'modal-overlay') closeGroupModal();
 });
 
-// Экспорт в window
 window.openGroupModal = openGroupModal;
 
-// ===== ГРАФИК АКТИВНОСТИ (Chart.js) =====
+// ===== ГРАФИК АКТИВНОСТИ =====
 let timelineChart = null;
 
 async function loadTimelineChart(chatId, days = 30) {
@@ -196,7 +199,7 @@ async function loadTimelineChart(chatId, days = 30) {
             ctx.fillStyle = '#999';
             ctx.font = '14px sans-serif';
             ctx.textAlign = 'center';
-            ctx.fillText('Нет данных', canvas.width / 2, canvas.height / 2);
+            ctx.fillText(t('modal.chart_no_data'), canvas.width / 2, canvas.height / 2);
             return;
         }
 
@@ -211,82 +214,53 @@ async function loadTimelineChart(chatId, days = 30) {
                 labels: labels,
                 datasets: [
                     {
-                        label: '🗑 Удалено',
+                        label: t('chart.deleted'),
                         data: items.map(d => d.deleted || 0),
                         borderColor: '#2481cc',
                         backgroundColor: 'rgba(36, 129, 204, 0.12)',
-                        borderWidth: 2,
-                        tension: 0.3,
-                        pointRadius: 2,
-                        pointHoverRadius: 5,
-                        fill: true,
+                        borderWidth: 2, tension: 0.3, pointRadius: 2,
+                        pointHoverRadius: 5, fill: true,
                     },
                     {
-                        label: '⚖️ Баны',
+                        label: t('chart.bans'),
                         data: items.map(d => d.bans || 0),
                         borderColor: '#e74c3c',
                         backgroundColor: 'rgba(231, 76, 60, 0.12)',
-                        borderWidth: 2,
-                        tension: 0.3,
-                        pointRadius: 2,
-                        pointHoverRadius: 5,
-                        fill: true,
+                        borderWidth: 2, tension: 0.3, pointRadius: 2,
+                        pointHoverRadius: 5, fill: true,
                     },
                     {
-                        label: '⚠️ Нарушения',
+                        label: t('chart.violations'),
                         data: items.map(d => d.violations || 0),
                         borderColor: '#f39c12',
                         backgroundColor: 'rgba(243, 156, 18, 0.12)',
-                        borderWidth: 2,
-                        tension: 0.3,
-                        pointRadius: 2,
-                        pointHoverRadius: 5,
-                        fill: true,
+                        borderWidth: 2, tension: 0.3, pointRadius: 2,
+                        pointHoverRadius: 5, fill: true,
                     },
                 ]
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: false,
+                responsive: true, maintainAspectRatio: false,
                 interaction: { mode: 'index', intersect: false },
                 plugins: {
                     legend: {
                         position: 'bottom',
-                        labels: {
-                            boxWidth: 12,
-                            padding: 8,
-                            font: { size: 11 },
-                            color: textColor,
-                        }
+                        labels: { boxWidth: 12, padding: 8, font: { size: 11 }, color: textColor }
                     },
                     tooltip: {
-                        backgroundColor: 'rgba(0,0,0,0.85)',
-                        padding: 8,
-                        titleFont: { size: 12 },
-                        bodyFont: { size: 12 },
+                        backgroundColor: 'rgba(0,0,0,0.85)', padding: 8,
+                        titleFont: { size: 12 }, bodyFont: { size: 12 },
                     }
                 },
                 scales: {
                     x: {
                         grid: { display: false },
-                        ticks: {
-                            font: { size: 10 },
-                            color: textColor,
-                            maxRotation: 0,
-                            autoSkip: true,
-                            maxTicksLimit: 8,
-                        }
+                        ticks: { font: { size: 10 }, color: textColor, maxRotation: 0, autoSkip: true, maxTicksLimit: 8 }
                     },
                     y: {
                         beginAtZero: true,
-                        ticks: {
-                            font: { size: 10 },
-                            color: textColor,
-                            precision: 0,
-                        },
-                        grid: {
-                            color: 'rgba(128,128,128,0.15)',
-                        }
+                        ticks: { font: { size: 10 }, color: textColor, precision: 0 },
+                        grid: { color: 'rgba(128,128,128,0.15)' }
                     }
                 }
             }
@@ -299,7 +273,7 @@ async function loadTimelineChart(chatId, days = 30) {
         ctx.fillStyle = '#999';
         ctx.font = '14px sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText('Не удалось загрузить', canvas.width / 2, canvas.height / 2);
+        ctx.fillText(t('modal.chart_error'), canvas.width / 2, canvas.height / 2);
     }
 }
 
