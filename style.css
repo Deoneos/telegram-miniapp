@@ -460,29 +460,36 @@ a.btn:visited {
     top: 10px;
     right: 10px;
     display: flex;
-    gap: 4px;
+    gap: 0;                          /* ← убираем gap, чтобы не было «мёртвой зоны» */
     background: var(--tg-theme-secondary-bg-color, #f5f5f5);
     border-radius: 12px;
     padding: 4px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    z-index: 10;                     /* ← поверх других элементов */
 }
 
 .lang-btn {
     background: transparent;
     border: none;
-    padding: 8px 14px;              /* ← было 5px 10px */
+    padding: 12px 18px;              /* ← ещё больше для удобного тапа */
+    margin: 0;                       /* ← убираем возможные browser-margins */
     border-radius: 9px;
-    font-size: 14px;                /* ← было 12px */
-    font-weight: 700;               /* ← было 600 */
+    font-size: 14px;
+    font-weight: 700;
     cursor: pointer;
     color: var(--tg-theme-hint-color, #999);
     transition: all 0.15s;
     font-family: inherit;
-    min-width: 44px;                /* ← было 34px */
-    min-height: 36px;               /* ← новое, для тапа */
+    min-width: 52px;                 /* ← было 44px */
+    min-height: 44px;                /* ← 44px — золотой стандарт Apple */
     display: flex;
     align-items: center;
     justify-content: center;
+    touch-action: manipulation;      /* ← убирает задержку 300ms на тап */
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
+    line-height: 1;
 }
 
 .lang-btn.active {
@@ -491,7 +498,7 @@ a.btn:visited {
 }
 
 .lang-btn:active {
-    transform: scale(0.95);
+    transform: scale(0.96);
 }
 
 /* Header должен быть relative для absolute переключателя */
