@@ -140,6 +140,9 @@ function openGroupModal(chatId, title, chatType, deleted, bans, violations, adde
         tg.openTelegramLink(`https://t.me/ANTI_SPAM_MWKbot`);
     };
 
+    // Загружаем график активности
+    loadTimelineChart(chatId, 30);
+
     document.getElementById('modal-overlay').style.display = 'flex';
 }
 
