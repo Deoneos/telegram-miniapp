@@ -88,7 +88,8 @@ async function loadGroups() {
                     ${g.bans_count || 0},
                     ${g.violations_count || 0},
                     '${(g.added_at || '').slice(0, 10)}',
-                    '${(g.invite_link || '').replace(/'/g, "\\'")}'
+                    '${(g.invite_link || '').replace(/'/g, "\\'")}',
+                    '${(g.channel_link || '').replace(/'/g, "\\'")}'
                 )">
                     <div class="group-avatar">${initial}</div>
                     <div class="group-content">
@@ -117,7 +118,7 @@ async function loadGroups() {
 }
 
 // ===== МОДАЛЬНОЕ ОКНО =====
-function openGroupModal(chatId, title, chatType, deleted, bans, violations, added, inviteLink) {
+function openGroupModal(chatId, title, chatType, deleted, bans, violations, added, inviteLink, channelLink) {
     document.getElementById('modal-title').textContent = title || 'Без названия';
     document.getElementById('modal-subtitle').textContent = `ID: ${chatId}`;
     document.getElementById('modal-deleted').textContent = deleted;
@@ -131,6 +132,7 @@ function openGroupModal(chatId, title, chatType, deleted, bans, violations, adde
 
     document.getElementById('modal-info').innerHTML =
         `📅 Добавлена: ${added || 'неизвестно'}<br>📁 Тип: ${typeText}`;
+
     // Кнопка "Открыть группу"
     const openGroupBtn = document.getElementById('modal-open-group');
     if (inviteLink && inviteLink.startsWith('http')) {
@@ -139,7 +141,17 @@ function openGroupModal(chatId, title, chatType, deleted, bans, violations, adde
     } else {
         openGroupBtn.style.display = 'none';
     }
-    // Загружаем график активности
+
+    // Кнопка "Открыть канал" (если группа привязана к каналу)
+    const openChannelBtn = document.getElementById('modal-open-channel');
+    if (channelLink && channelLink.startsWith('http')) {
+        openChannelBtn.href = channelLink;
+        openChannelBtn.style.display = 'block';
+    } else {
+        openChannelBtn.style.display = 'none';
+    }
+
+    // График активности
     loadTimelineChart(chatId, 30);
 
     document.getElementById('modal-overlay').style.display = 'flex';
@@ -158,10 +170,6 @@ document.getElementById('modal-overlay').addEventListener('click', (e) => {
 // Экспорт в window
 window.openGroupModal = openGroupModal;
 
-// ===== ЗАПУСК =====
-loadGroups();
-tg.ready();
-
 // ===== ГРАФИК АКТИВНОСТИ (Chart.js) =====
 let timelineChart = null;
 
@@ -169,7 +177,6 @@ async function loadTimelineChart(chatId, days = 30) {
     const canvas = document.getElementById('chart-timeline');
     if (!canvas || typeof Chart === 'undefined') return;
 
-    // Уничтожаем старый график, если есть
     if (timelineChart) {
         timelineChart.destroy();
         timelineChart = null;
@@ -297,3 +304,7 @@ async function loadTimelineChart(chatId, days = 30) {
 }
 
 window.loadTimelineChart = loadTimelineChart;
+
+// ===== ЗАПУСК =====
+loadGroups();
+tg.ready();
