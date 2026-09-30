@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ANTI_SPAM Bot</title>
-    <link rel="stylesheet" href="style.css?v=5">
+    <link rel="stylesheet" href="style.css?v=6">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
@@ -12,16 +12,20 @@
     <div class="container">
         <!-- Шапка -->
         <header class="header">
+            <div class="lang-switch">
+                <button class="lang-btn" data-lang="ru">RU</button>
+                <button class="lang-btn" data-lang="en">EN</button>
+            </div>
             <div class="header-icon">🛡️</div>
-            <h1>ANTI_SPAM Bot</h1>
-            <p class="subtitle">Защита групп от спама и рекламы</p>
+            <h1 data-i18n="app.title">ANTI_SPAM Bot</h1>
+            <p class="subtitle" data-i18n="app.subtitle">Защита групп от спама и рекламы</p>
         </header>
 
         <!-- Профиль -->
         <section class="card user-card">
             <div class="user-avatar" id="user-avatar">👤</div>
             <div class="user-info">
-                <div class="user-name" id="user-name">Загрузка...</div>
+                <div class="user-name" id="user-name" data-i18n="user.loading">Загрузка...</div>
                 <div class="user-id" id="user-id">ID: —</div>
             </div>
         </section>
@@ -31,35 +35,35 @@
             <div class="stat-tile">
                 <div class="stat-icon">📢</div>
                 <div class="stat-value" id="stat-chats">0</div>
-                <div class="stat-label">групп</div>
+                <div class="stat-label" data-i18n="stats.chats">групп</div>
             </div>
             <div class="stat-tile">
                 <div class="stat-icon">🗑</div>
                 <div class="stat-value" id="stat-deleted">0</div>
-                <div class="stat-label">удалено</div>
+                <div class="stat-label" data-i18n="stats.deleted">удалено</div>
             </div>
             <div class="stat-tile">
                 <div class="stat-icon">⚖️</div>
                 <div class="stat-value" id="stat-bans">0</div>
-                <div class="stat-label">банов</div>
+                <div class="stat-label" data-i18n="stats.bans">банов</div>
             </div>
         </section>
 
         <!-- Кнопка добавить -->
         <section class="card">
-            <h2>➕ Добавить бота в группу</h2>
-            <p class="hint">Нажмите кнопку ниже — бот начнёт защищать вашу группу от спама</p>
-            <button class="btn btn-primary" id="add-to-group-btn">
+            <h2 data-i18n="add.title">➕ Добавить бота в группу</h2>
+            <p class="hint" data-i18n="add.hint">Нажмите кнопку ниже — бот начнёт защищать вашу группу от спама</p>
+            <button class="btn btn-primary" id="add-to-group-btn" data-i18n="add.button">
                 Добавить в группу
             </button>
         </section>
 
         <!-- Заголовок групп -->
-        <h2 class="section-title">📋 Мои группы</h2>
+        <h2 class="section-title" data-i18n="groups.title">📋 Мои группы</h2>
 
         <!-- Список групп -->
         <section class="groups-list" id="groups-list">
-            <p style="text-align:center;color:#999;">Загрузка...</p>
+            <p style="text-align:center;color:#999;" data-i18n="groups.loading">Загрузка...</p>
         </section>
 
         <!-- Футер -->
@@ -74,27 +78,27 @@
             <button class="modal-close" id="modal-close">✕</button>
             <div class="modal-header">
                 <div class="modal-icon" id="modal-icon">📢</div>
-                <h3 class="modal-title" id="modal-title">Группа</h3>
+                <h3 class="modal-title" id="modal-title" data-i18n="modal.title_default">Группа</h3>
                 <p class="modal-subtitle" id="modal-subtitle">ID: —</p>
             </div>
             <div class="modal-stats">
                 <div class="modal-stat">
                     <div class="modal-stat-value" id="modal-deleted">0</div>
-                    <div class="modal-stat-label">Удалено</div>
+                    <div class="modal-stat-label" data-i18n="modal.stat_deleted">Удалено</div>
                 </div>
                 <div class="modal-stat">
                     <div class="modal-stat-value" id="modal-bans">0</div>
-                    <div class="modal-stat-label">Банов</div>
+                    <div class="modal-stat-label" data-i18n="modal.stat_bans">Банов</div>
                 </div>
                 <div class="modal-stat">
                     <div class="modal-stat-value" id="modal-violations">0</div>
-                    <div class="modal-stat-label">Нарушений</div>
+                    <div class="modal-stat-label" data-i18n="modal.stat_violations">Нарушений</div>
                 </div>
             </div>
             <div class="modal-info" id="modal-info"></div>
 
             <div class="modal-chart-container">
-                <h4 class="modal-chart-title">📊 Активность за 30 дней</h4>
+                <h4 class="modal-chart-title" data-i18n="modal.chart_title">📊 Активность за 30 дней</h4>
                 <div class="modal-chart-wrap">
                     <canvas id="chart-timeline"></canvas>
                 </div>
@@ -104,7 +108,8 @@
                href="#"
                target="_blank"
                rel="noopener noreferrer"
-               style="display:none; text-align:center; text-decoration:none; margin-bottom:8px;">
+               style="display:none; text-align:center; text-decoration:none; margin-bottom:8px;"
+               data-i18n="modal.btn_open_group">
                 🚪 Открыть группу
             </a>
             <a class="btn btn-secondary"
@@ -112,12 +117,14 @@
                href="#"
                target="_blank"
                rel="noopener noreferrer"
-               style="display:none; text-align:center; text-decoration:none; margin-bottom:8px;">
+               style="display:none; text-align:center; text-decoration:none; margin-bottom:8px;"
+               data-i18n="modal.btn_open_channel">
                 📢 Открыть канал
             </a>
         </div>
     </div>
 
-    <script src="app.js?v=5"></script>
+    <script src="i18n.js?v=6"></script>
+    <script src="app.js?v=6"></script>
 </body>
 </html>
