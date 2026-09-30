@@ -35,12 +35,20 @@ applyTranslations();
 
 // ===== ПЕРЕКЛЮЧАТЕЛЬ ЯЗЫКА =====
 document.querySelectorAll('.lang-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
+    const handler = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
         const lang = btn.getAttribute('data-lang');
+        if (lang === currentLang()) return;  // уже выбран — не дёргаем
         setLanguage(lang);
-        // Перерисовываем список групп (там динамический контент)
-        if (user && user.id) loadGroups();
-    });
+        renderGroups();
+    };
+
+    // pointerdown — самый быстрый и надёжный
+    btn.addEventListener('pointerdown', handler);
+
+    // fallback для старых WebView
+    btn.addEventListener('click', handler);
 });
 
 // Кнопка "Добавить в группу"
