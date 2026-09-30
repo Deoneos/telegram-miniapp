@@ -38,16 +38,11 @@ document.querySelectorAll('.lang-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
         e.preventDefault();
         const lang = btn.getAttribute('data-lang');
-        if (lang === currentLang()) return;
+        // Через localStorage — не зависит от внешних функций
+        if (localStorage.getItem('lang') === lang) return;
         setLanguage(lang);
         renderGroups();
     });
-});
-    // pointerdown — самый быстрый и надёжный
-    btn.addEventListener('pointerdown', handler);
-
-    // fallback для старых WebView
-    btn.addEventListener('click', handler);
 });
 
 // Кнопка "Добавить в группу"
