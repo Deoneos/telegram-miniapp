@@ -35,15 +35,14 @@ applyTranslations();
 
 // ===== ПЕРЕКЛЮЧАТЕЛЬ ЯЗЫКА =====
 document.querySelectorAll('.lang-btn').forEach(btn => {
-    const handler = (e) => {
+    btn.addEventListener('click', (e) => {
         e.preventDefault();
-        e.stopPropagation();
         const lang = btn.getAttribute('data-lang');
-        if (lang === currentLang()) return;  // уже выбран — не дёргаем
+        if (lang === currentLang()) return;
         setLanguage(lang);
         renderGroups();
-    };
-
+    });
+});
     // pointerdown — самый быстрый и надёжный
     btn.addEventListener('pointerdown', handler);
 
