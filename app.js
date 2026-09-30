@@ -87,7 +87,8 @@ async function loadGroups() {
                     ${g.deleted_count || 0},
                     ${g.bans_count || 0},
                     ${g.violations_count || 0},
-                    '${(g.added_at || '').slice(0, 10)}'
+                    '${(g.added_at || '').slice(0, 10)}',
+                    '${(g.invite_link || '').replace(/'/g, "\\'")}'
                 )">
                     <div class="group-avatar">${initial}</div>
                     <div class="group-content">
@@ -116,7 +117,7 @@ async function loadGroups() {
 }
 
 // ===== МОДАЛЬНОЕ ОКНО =====
-function openGroupModal(chatId, title, chatType, deleted, bans, violations, added) {
+function openGroupModal(chatId, title, chatType, deleted, bans, violations, added, inviteLink) {
     document.getElementById('modal-title').textContent = title || 'Без названия';
     document.getElementById('modal-subtitle').textContent = `ID: ${chatId}`;
     document.getElementById('modal-deleted').textContent = deleted;
@@ -130,7 +131,14 @@ function openGroupModal(chatId, title, chatType, deleted, bans, violations, adde
 
     document.getElementById('modal-info').innerHTML =
         `📅 Добавлена: ${added || 'неизвестно'}<br>📁 Тип: ${typeText}`;
-
+    // Кнопка "Открыть группу"
+    const openGroupBtn = document.getElementById('modal-open-group');
+    if (inviteLink && inviteLink.startsWith('http')) {
+        openGroupBtn.href = inviteLink;
+        openGroupBtn.style.display = 'block';
+    } else {
+        openGroupBtn.style.display = 'none';
+    }
     // Загружаем график активности
     loadTimelineChart(chatId, 30);
 
