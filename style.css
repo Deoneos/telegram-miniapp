@@ -539,3 +539,8 @@ a.btn:visited {
 .period-btn:active {
     transform: scale(0.97);
 }
+
+/* ===== ПИРОГ КАТЕГОРИЙ ===== */
+.modal-chart-wrap-pie {
+    height: 260px;
+}

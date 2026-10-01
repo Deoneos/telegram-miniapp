@@ -167,6 +167,7 @@ function openGroupModal(chatId, title, chatType, deleted, bans, violations, adde
     // Берём последний выбранный период или дефолт 30
     const savedDays = parseInt(localStorage.getItem('chart_days')) || 30;
     loadTimelineChart(chatId, savedDays);
+    loadCategoriesChart(chatId, savedDays);
     document.getElementById('modal-overlay').style.display = 'flex';
 }
 
@@ -314,6 +315,7 @@ document.querySelectorAll('.period-btn').forEach(btn => {
         if (days === savedDays) return;
         if (currentChartChatId !== null) {
             loadTimelineChart(currentChartChatId, days);
+            loadCategoriesChart(currentChartChatId, days);
         }
     });
 });
@@ -322,3 +324,106 @@ window.loadTimelineChart = loadTimelineChart;
 // ===== ЗАПУСК =====
 loadGroups();
 tg.ready();
+
+// ===== ПИРОГ КАТЕГОРИЙ =====
+let categoriesChart = null;
+
+// Цвета для категорий
+const CATEGORY_COLORS = {
+    drugs: '#e74c3c',
+    job: '#f39c12',
+    porn: '#9b59b6',
+    links: '#3498db',
+    rules: '#95a5a6',
+    contact: '#1abc9c',
+    flood: '#16a085',
+    mass_spam: '#e67e22',
+    other: '#7f8c8d',
+};
+
+async function loadCategoriesChart(chatId, days = 30) {
+    const canvas = document.getElementById('chart-categories');
+    if (!canvas || typeof Chart === 'undefined') return;
+
+    if (categoriesChart) {
+        categoriesChart.destroy();
+        categoriesChart = null;
+    }
+
+    try {
+        const response = await fetch(`${API_BASE}/api/categories?chat_id=${chatId}`);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+
+        const items = data.categories || [];
+        const textColor = getComputedStyle(document.body).color;
+
+        if (items.length === 0) {
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#999';
+            ctx.font = '14px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(t('categories.no_data'), canvas.width / 2, canvas.height / 2);
+            return;
+        }
+
+        const labels = items.map(c => t(`cat.${c.code}`));
+        const values = items.map(c => c.count);
+        const colors = items.map(c => CATEGORY_COLORS[c.code] || '#7f8c8d');
+
+        categoriesChart = new Chart(canvas.getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: values,
+                    backgroundColor: colors,
+                    borderWidth: 2,
+                    borderColor: 'rgba(255,255,255,0.1)',
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '55%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            boxWidth: 12,
+                            padding: 8,
+                            font: { size: 11 },
+                            color: textColor,
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0,0,0,0.85)',
+                        padding: 8,
+                        titleFont: { size: 12 },
+                        bodyFont: { size: 12 },
+                        callbacks: {
+                            label: (ctx) => {
+                                const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
+                                const val = ctx.parsed;
+                                const pct = total > 0 ? ((val / total) * 100).toFixed(1) : 0;
+                                return ` ${ctx.label}: ${val} (${pct}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+    } catch (e) {
+        console.error('Categories error:', e);
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#999';
+        ctx.font = '14px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(t('categories.error'), canvas.width / 2, canvas.height / 2);
+    }
+}
+
+window.loadCategoriesChart = loadCategoriesChart;

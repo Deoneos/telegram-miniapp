@@ -60,6 +60,20 @@ const TRANSLATIONS = {
     'chart.deleted': { ru: '🗑 Удалено', en: '🗑 Deleted' },
     'chart.bans': { ru: '⚖️ Баны', en: '⚖️ Bans' },
     'chart.violations': { ru: '⚠️ Нарушения', en: '⚠️ Violations' },
+        // Категории для пирога
+    'categories.title': { ru: '📊 Категории нарушений', en: '📊 Violation categories' },
+    'categories.no_data': { ru: 'Нет данных', en: 'No data' },
+    'categories.error': { ru: 'Не удалось загрузить', en: 'Failed to load' },
+
+    'cat.drugs': { ru: '🚨 Наркотики', en: '🚨 Drugs' },
+    'cat.job': { ru: '💼 Спам-работа', en: '💼 Spam-job' },
+    'cat.porn': { ru: '🔞 Порнография', en: '🔞 Porn' },
+    'cat.links': { ru: '🔗 Ссылки/контакты', en: '🔗 Links/contacts' },
+    'cat.rules': { ru: '⚠️ Нарушение правил', en: '⚠️ Rules violation' },
+    'cat.contact': { ru: '📇 Контакты', en: '📇 Contacts' },
+    'cat.flood': { ru: '🌊 Флуд', en: '🌊 Flood' },
+    'cat.mass_spam': { ru: '🚫 Массовая рассылка', en: '🚫 Mass spam' },
+    'cat.other': { ru: '❓ Прочее', en: '❓ Other' },
 };
 
 // ===== ОПРЕДЕЛЕНИЕ ЯЗЫКА =====
