@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ANTI_SPAM Bot</title>
-    <link rel="stylesheet" href="style.css?v=6">
+    <link rel="stylesheet" href="style.css?v=7">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
@@ -98,9 +98,14 @@
             <div class="modal-info" id="modal-info"></div>
 
             <div class="modal-chart-container">
-                <h4 class="modal-chart-title" data-i18n="modal.chart_title">📊 Активность за 30 дней</h4>
+                <h4 class="modal-chart-title" id="chart-title" data-i18n="modal.chart_title_30">📊 Активность за 30 дней</h4>
                 <div class="modal-chart-wrap">
                     <canvas id="chart-timeline"></canvas>
+                </div>
+                <div class="chart-period-switch">
+                    <button type="button" class="period-btn" data-days="7" data-i18n="modal.chart_days_7">7 дней</button>
+                    <button type="button" class="period-btn active" data-days="30" data-i18n="modal.chart_days_30">30 дней</button>
+                    <button type="button" class="period-btn" data-days="90" data-i18n="modal.chart_days_90">90 дней</button>
                 </div>
             </div>
             <a class="btn btn-primary"
@@ -124,7 +129,7 @@
         </div>
     </div>
 
-    <script src="i18n.js?v=6"></script>
-    <script src="app.js?v=6"></script>
+    <script src="i18n.js?v=7"></script>
+    <script src="app.js?v=7"></script>
 </body>
 </html>

@@ -134,6 +134,7 @@ async function loadGroups() {
 
 // ===== МОДАЛЬНОЕ ОКНО =====
 function openGroupModal(chatId, title, chatType, deleted, bans, violations, added, inviteLink, channelLink) {
+    currentChartChatId = chatId;
     document.getElementById('modal-title').textContent = title || t('modal.title_default');
     document.getElementById('modal-subtitle').textContent = `ID: ${chatId}`;
     document.getElementById('modal-deleted').textContent = deleted;
@@ -163,7 +164,9 @@ function openGroupModal(chatId, title, chatType, deleted, bans, violations, adde
         openChannelBtn.style.display = 'none';
     }
 
-    loadTimelineChart(chatId, 30);
+    // Берём последний выбранный период или дефолт 30
+    const savedDays = parseInt(localStorage.getItem('chart_days')) || 30;
+    loadTimelineChart(chatId, savedDays);
     document.getElementById('modal-overlay').style.display = 'flex';
 }
 
@@ -180,11 +183,29 @@ window.openGroupModal = openGroupModal;
 
 // ===== ГРАФИК АКТИВНОСТИ =====
 let timelineChart = null;
+let currentChartChatId = null;
 
 async function loadTimelineChart(chatId, days = 30) {
     const canvas = document.getElementById('chart-timeline');
     if (!canvas || typeof Chart === 'undefined') return;
 
+    // Обновляем заголовок
+    const titleEl = document.getElementById('chart-title');
+    if (titleEl) {
+        titleEl.setAttribute('data-i18n', `modal.chart_title_${days}`);
+        titleEl.textContent = t(`modal.chart_title_${days}`);
+    }
+
+    // Обновляем активную кнопку периода
+    document.querySelectorAll('.period-btn').forEach(btn => {
+        const btnDays = parseInt(btn.getAttribute('data-days'));
+        btn.classList.toggle('active', btnDays === days);
+    });
+
+    // Запоминаем выбор
+    localStorage.setItem('chart_days', days);
+
+    // Уничтожаем старый график
     if (timelineChart) {
         timelineChart.destroy();
         timelineChart = null;
@@ -213,6 +234,9 @@ async function loadTimelineChart(chatId, days = 30) {
             return `${p[2]}.${p[1]}`;
         });
 
+        // Для 90 дней — показываем реже подписи
+        const maxTicks = days > 60 ? 10 : 8;
+
         timelineChart = new Chart(canvas.getContext('2d'), {
             type: 'line',
             data: {
@@ -223,7 +247,7 @@ async function loadTimelineChart(chatId, days = 30) {
                         data: items.map(d => d.deleted || 0),
                         borderColor: '#2481cc',
                         backgroundColor: 'rgba(36, 129, 204, 0.12)',
-                        borderWidth: 2, tension: 0.3, pointRadius: 2,
+                        borderWidth: 2, tension: 0.3, pointRadius: days > 60 ? 0 : 2,
                         pointHoverRadius: 5, fill: true,
                     },
                     {
@@ -231,7 +255,7 @@ async function loadTimelineChart(chatId, days = 30) {
                         data: items.map(d => d.bans || 0),
                         borderColor: '#e74c3c',
                         backgroundColor: 'rgba(231, 76, 60, 0.12)',
-                        borderWidth: 2, tension: 0.3, pointRadius: 2,
+                        borderWidth: 2, tension: 0.3, pointRadius: days > 60 ? 0 : 2,
                         pointHoverRadius: 5, fill: true,
                     },
                     {
@@ -239,7 +263,7 @@ async function loadTimelineChart(chatId, days = 30) {
                         data: items.map(d => d.violations || 0),
                         borderColor: '#f39c12',
                         backgroundColor: 'rgba(243, 156, 18, 0.12)',
-                        borderWidth: 2, tension: 0.3, pointRadius: 2,
+                        borderWidth: 2, tension: 0.3, pointRadius: days > 60 ? 0 : 2,
                         pointHoverRadius: 5, fill: true,
                     },
                 ]
@@ -260,7 +284,7 @@ async function loadTimelineChart(chatId, days = 30) {
                 scales: {
                     x: {
                         grid: { display: false },
-                        ticks: { font: { size: 10 }, color: textColor, maxRotation: 0, autoSkip: true, maxTicksLimit: 8 }
+                        ticks: { font: { size: 10 }, color: textColor, maxRotation: 0, autoSkip: true, maxTicksLimit: maxTicks }
                     },
                     y: {
                         beginAtZero: true,
@@ -281,7 +305,18 @@ async function loadTimelineChart(chatId, days = 30) {
         ctx.fillText(t('modal.chart_error'), canvas.width / 2, canvas.height / 2);
     }
 }
-
+// ===== ПЕРЕКЛЮЧАТЕЛЬ ПЕРИОДА ГРАФИКА =====
+document.querySelectorAll('.period-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const days = parseInt(btn.getAttribute('data-days'));
+        const savedDays = parseInt(localStorage.getItem('chart_days')) || 30;
+        if (days === savedDays) return;
+        if (currentChartChatId !== null) {
+            loadTimelineChart(currentChartChatId, days);
+        }
+    });
+});
 window.loadTimelineChart = loadTimelineChart;
 
 // ===== ЗАПУСК =====

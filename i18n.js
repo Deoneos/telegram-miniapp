@@ -45,7 +45,12 @@ const TRANSLATIONS = {
     'modal.stat_bans': { ru: 'Банов', en: 'Bans' },
     'modal.stat_violations': { ru: 'Нарушений', en: 'Violations' },
 
-    'modal.chart_title': { ru: '📊 Активность за 30 дней', en: '📊 Activity for 30 days' },
+    'modal.chart_title_7': { ru: '📊 Активность за 7 дней', en: '📊 Activity for 7 days' },
+    'modal.chart_title_30': { ru: '📊 Активность за 30 дней', en: '📊 Activity for 30 days' },
+    'modal.chart_title_90': { ru: '📊 Активность за 90 дней', en: '📊 Activity for 90 days' },
+    'modal.chart_days_7': { ru: '7 дней', en: '7 days' },
+    'modal.chart_days_30': { ru: '30 дней', en: '30 days' },
+    'modal.chart_days_90': { ru: '90 дней', en: '90 days' },
     'modal.chart_no_data': { ru: 'Нет данных', en: 'No data' },
     'modal.chart_error': { ru: 'Не удалось загрузить', en: 'Failed to load' },
 
