@@ -74,6 +74,12 @@ const TRANSLATIONS = {
     'cat.flood': { ru: '🌊 Флуд', en: '🌊 Flood' },
     'cat.mass_spam': { ru: '🚫 Массовая рассылка', en: '🚫 Mass spam' },
     'cat.other': { ru: '❓ Прочее', en: '❓ Other' },
+        // Топ нарушителей
+    'violators.title': { ru: '🏆 Топ нарушителей', en: '🏆 Top violators' },
+    'violators.no_data': { ru: 'Нарушителей нет', en: 'No violators' },
+    'violators.error': { ru: 'Не удалось загрузить', en: 'Failed to load' },
+    'violators.count': { ru: '{n} наруш.', en: '{n} viol.' },
+    'violators.no_name': { ru: 'Без имени', en: 'No name' },
 };
 
 // ===== ОПРЕДЕЛЕНИЕ ЯЗЫКА =====

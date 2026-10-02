@@ -168,6 +168,7 @@ function openGroupModal(chatId, title, chatType, deleted, bans, violations, adde
     const savedDays = parseInt(localStorage.getItem('chart_days')) || 30;
     loadTimelineChart(chatId, savedDays);
     loadCategoriesChart(chatId, savedDays);
+    loadTopViolators(chatId);
     document.getElementById('modal-overlay').style.display = 'flex';
 }
 
@@ -316,6 +317,7 @@ document.querySelectorAll('.period-btn').forEach(btn => {
         if (currentChartChatId !== null) {
             loadTimelineChart(currentChartChatId, days);
             loadCategoriesChart(currentChartChatId, days);
+            loadTopViolators(currentChartChatId);
         }
     });
 });
@@ -426,4 +428,60 @@ async function loadCategoriesChart(chatId, days = 30) {
     }
 }
 
+// ===== ТОП НАРУШИТЕЛЕЙ =====
+async function loadTopViolators(chatId) {
+    const container = document.getElementById('violators-list');
+    if (!container) return;
+
+    container.innerHTML = `<p class="violators-loading">${t('groups.loading')}</p>`;
+
+    try {
+        const response = await fetch(`${API_BASE}/api/top_violators?chat_id=${chatId}&limit=5`);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+
+        const items = data.violators || [];
+
+        if (items.length === 0) {
+            container.innerHTML = `<p class="violators-empty">${t('violators.no_data')}</p>`;
+            return;
+        }
+
+        container.innerHTML = items.map((v, i) => {
+            const name = v.first_name || v.username || t('violators.no_name');
+            const countText = t('violators.count', { n: v.count });
+            const codeText = v.last_code ? t(`cat.${v.last_code}`) : '';
+            const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i + 1}.`;
+
+            return `
+                <div class="violator-item">
+                    <div class="violator-rank">${medal}</div>
+                    <div class="violator-info">
+                        <div class="violator-name">${escapeHtml(name)}</div>
+                        <div class="violator-meta">
+                            ${codeText}${v.last_date ? ' · ' + v.last_date : ''}
+                        </div>
+                    </div>
+                    <div class="violator-count">${countText}</div>
+                </div>
+            `;
+        }).join('');
+
+    } catch (e) {
+        console.error('Top violators error:', e);
+        container.innerHTML = `<p class="violators-empty">${t('violators.error')}</p>`;
+    }
+}
+
+// Утилита для экранирования HTML
+function escapeHtml(str) {
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+window.loadTopViolators = loadTopViolators;
 window.loadCategoriesChart = loadCategoriesChart;
