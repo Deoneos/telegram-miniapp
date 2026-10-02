@@ -61,6 +61,13 @@ async function loadGroups() {
                 <div class="empty-icon">🔒</div>
                 <h3>${t('groups.locked_title')}</h3>
                 <p>${t('groups.locked_text')}</p>
+                <a href="https://deoneos.github.io/antispam-landing/"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   class="btn btn-secondary"
+                   style="display:inline-block; margin-top:16px; text-decoration:none;">
+                    ${t('groups.learn_more')}
+                </a>
             </div>
         `;
         return;
@@ -86,6 +93,13 @@ async function loadGroups() {
                     <div class="empty-icon">📭</div>
                     <h3>${t('groups.empty_title')}</h3>
                     <p>${t('groups.empty_text')}</p>
+                    <a href="https://deoneos.github.io/antispam-landing/"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       class="btn btn-secondary"
+                       style="display:inline-block; margin-top:16px; text-decoration:none;">
+                        ${t('groups.learn_more')}
+                    </a>
                 </div>
             `;
             return;

@@ -80,6 +80,10 @@ const TRANSLATIONS = {
     'violators.error': { ru: 'Не удалось загрузить', en: 'Failed to load' },
     'violators.count': { ru: '{n} наруш.', en: '{n} viol.' },
     'violators.no_name': { ru: 'Без имени', en: 'No name' },
+
+    // Footer + Landing link
+    'footer.about': { ru: '🌐 О боте', en: '🌐 About the bot' },
+    'groups.learn_more': { ru: '🌐 Узнать больше о боте', en: '🌐 Learn more about the bot' },
 };
 
 // ===== ОПРЕДЕЛЕНИЕ ЯЗЫКА =====
