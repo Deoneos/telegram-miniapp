@@ -1,5 +1,5 @@
 // ===== API URL =====
-const API_BASE = 'https://antispam-api-zakharsakharov.amvera.io';
+const API_BASE = 'https://telegram-bot-zakharsakharov.msk1.amvera.tech';
 
 // ===== ИНИЦИАЛИЗАЦИЯ =====
 const tg = window.Telegram.WebApp;
