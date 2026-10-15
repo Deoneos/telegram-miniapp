@@ -593,3 +593,57 @@ function escapeHtml(str) {
 
 window.loadTopViolators = loadTopViolators;
 window.loadCategoriesChart = loadCategoriesChart;
+
+// ===== АДМИН-ПАНЕЛЬ =====
+async function checkAdminStatus() {
+    const btn = document.getElementById('admin-panel-btn');
+    if (!btn) return;
+
+    if (!user || !user.id) return;
+
+    try {
+        const resp = await fetch(`${API_BASE}/api/admin/me?user_id=${user.id}`);
+        if (!resp.ok) return;
+        const data = await resp.json();
+
+        if (data.ok && data.is_admin) {
+            btn.style.display = 'flex';
+            console.log('👑 Пользователь — админ бота');
+        }
+    } catch (e) {
+        console.warn('checkAdminStatus error:', e);
+    }
+}
+
+function openAdminModal() {
+    const overlay = document.getElementById('admin-overlay');
+    if (overlay) overlay.style.display = 'flex';
+}
+
+function closeAdminModal() {
+    const overlay = document.getElementById('admin-overlay');
+    if (overlay) overlay.style.display = 'none';
+}
+
+// Инициализация
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(checkAdminStatus, 500);
+
+    const btn = document.getElementById('admin-panel-btn');
+    if (btn) {
+        btn.addEventListener('click', openAdminModal);
+    }
+
+    const closeBtn = document.getElementById('admin-modal-close');
+    if (closeBtn) closeBtn.addEventListener('click', closeAdminModal);
+
+    const overlay = document.getElementById('admin-overlay');
+    if (overlay) {
+        overlay.addEventListener('click', (e) => {
+            if (e.target.id === 'admin-overlay') closeAdminModal();
+        });
+    }
+});
+
+window.checkAdminStatus = checkAdminStatus;
+window.openAdminModal = openAdminModal;

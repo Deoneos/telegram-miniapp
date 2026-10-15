@@ -2,6 +2,19 @@
 const TRANSLATIONS = {
     'app.title': { ru: 'ANTI_SPAM Bot', en: 'ANTI_SPAM Bot' },
     'app.subtitle': { ru: 'Защита групп от спама и рекламы', en: 'Protection from spam and ads' },
+
+    // ===== Админ-панель =====
+    'admin.button_title': { ru: 'Админ-панель', en: 'Admin panel' },
+    'admin.title': { ru: 'Админ-панель', en: 'Admin panel' },
+    'admin.subtitle': {
+        ru: 'Скоро здесь появятся инструменты управления',
+        en: 'Management tools coming soon'
+    },
+    'admin.soon': { ru: '🚧 В разработке', en: '🚧 Coming soon' },
+    'admin.soon_hint': {
+        ru: 'В следующем обновлении: список банов, нарушителей, удалённых сообщений, управление админами.',
+        en: 'Coming next: list of bans, violators, deleted messages, admin management.'
+    },
     'user.guest': { ru: 'Гость', en: 'Guest' },
     'user.open_via_tg': { ru: 'Откройте через Telegram', en: 'Open via Telegram' },
     'user.loading': { ru: 'Загрузка...', en: 'Loading...' },
