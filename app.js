@@ -183,6 +183,7 @@ function openGroupModal(chatId, title, chatType, deleted, bans, violations, adde
     loadTimelineChart(chatId, savedDays);
     loadCategoriesChart(chatId, savedDays);
     loadTopViolators(chatId);
+    loadChatSettings(chatId);
     document.getElementById('modal-overlay').style.display = 'flex';
 }
 
@@ -195,7 +196,100 @@ document.getElementById('modal-overlay').addEventListener('click', (e) => {
     if (e.target.id === 'modal-overlay') closeGroupModal();
 });
 
+// ===== НАСТРОЙКИ ГРУППЫ (модерация / антифлуд / OCR) =====
+async function loadChatSettings(chatId) {
+    const container = document.getElementById('settings-toggles');
+    if (!container) return;
+
+    if (!user || !user.id) {
+        container.innerHTML = `<p class="violators-empty">${t('settings.no_access')}</p>`;
+        return;
+    }
+
+    container.innerHTML = `<p class="violators-loading">${t('groups.loading')}</p>`;
+
+    try {
+        const resp = await fetch(`${API_BASE}/api/chat/${chatId}/settings?user_id=${user.id}`);
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const data = await resp.json();
+        renderSettings(data.settings || {});
+    } catch (e) {
+        console.error('loadChatSettings error:', e);
+        container.innerHTML = `<p class="violators-empty">${t('settings.error')}</p>`;
+    }
+}
+
+function renderSettings(s) {
+    const container = document.getElementById('settings-toggles');
+    if (!container) return;
+
+    const items = [
+        { key: 'moderation_enabled', label: t('settings.moderation'), desc: t('settings.moderation_desc') },
+        { key: 'antiflood_enabled',  label: t('settings.antiflood'),  desc: t('settings.antiflood_desc') },
+        { key: 'ocr_enabled',        label: t('settings.ocr'),        desc: t('settings.ocr_desc') },
+    ];
+
+    container.innerHTML = items.map(it => `
+        <div class="setting-row">
+            <div class="setting-info">
+                <div class="setting-name">${it.label}</div>
+                <div class="setting-desc">${it.desc}</div>
+            </div>
+            <label class="switch">
+                <input type="checkbox" data-key="${it.key}" ${s[it.key] ? 'checked' : ''}>
+                <span class="slider"></span>
+            </label>
+        </div>
+    `).join('');
+
+    container.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+        cb.addEventListener('change', () => toggleSetting(cb));
+    });
+}
+
+async function toggleSetting(cb) {
+    const chatId = currentChartChatId;
+    const key = cb.dataset.key;
+    const value = cb.checked ? 1 : 0;
+    const hint = document.getElementById('settings-hint');
+
+    cb.disabled = true;
+    const oldHint = hint ? hint.textContent : '';
+    if (hint) {
+        hint.classList.add('applying');
+        hint.textContent = t('settings.applying');
+    }
+
+    try {
+        const resp = await fetch(`${API_BASE}/api/chat/${chatId}/settings`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: user.id, key, value })
+        });
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+
+        // Через 30 секунд возвращаем обычный текст
+        setTimeout(() => {
+            if (hint) {
+                hint.classList.remove('applying');
+                hint.textContent = t('settings.hint');
+            }
+        }, 30000);
+    } catch (e) {
+        console.error('toggleSetting error:', e);
+        cb.checked = !cb.checked;   // откат
+        if (hint) {
+            hint.classList.remove('applying');
+            hint.textContent = oldHint || t('settings.hint');
+        }
+        alert(t('settings.error'));
+    } finally {
+        cb.disabled = false;
+    }
+}
+
 window.openGroupModal = openGroupModal;
+window.loadChatSettings = loadChatSettings;
 
 // ===== ГРАФИК АКТИВНОСТИ =====
 let timelineChart = null;

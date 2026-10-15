@@ -630,3 +630,104 @@ a.btn:visited {
 .footer-link a:active {
     opacity: 0.7;
 }
+
+/* ===== НАСТРОЙКИ ГРУППЫ (модалка) ===== */
+.modal-settings-container {
+    margin-bottom: 16px;
+}
+
+.settings-toggles {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.setting-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    background: var(--tg-theme-secondary-bg-color, #f5f5f5);
+    border-radius: 10px;
+}
+
+.setting-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.setting-name {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.setting-desc {
+    font-size: 11px;
+    color: var(--tg-theme-hint-color, #999);
+}
+
+/* Тумблер */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #ccc;
+    border-radius: 24px;
+    transition: 0.2s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background: white;
+    border-radius: 50%;
+    transition: 0.2s;
+}
+
+input:checked + .slider {
+    background: var(--tg-theme-button-color, #2481cc);
+}
+
+input:checked + .slider:before {
+    transform: translateX(20px);
+}
+
+input:disabled + .slider {
+    opacity: 0.5;
+    cursor: wait;
+}
+
+.settings-hint {
+    font-size: 11px;
+    color: var(--tg-theme-hint-color, #999);
+    text-align: center;
+    margin-top: 8px;
+    transition: color 0.2s;
+}
+
+.settings-hint.applying {
+    color: #5aa9e6;
+}

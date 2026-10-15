@@ -54,6 +54,19 @@ const TRANSLATIONS = {
     'modal.chart_no_data': { ru: 'Нет данных', en: 'No data' },
     'modal.chart_error': { ru: 'Не удалось загрузить', en: 'Failed to load' },
 
+    // ===== Настройки модерации =====
+    'settings.title': { ru: '⚙️ Настройки модерации', en: '⚙️ Moderation settings' },
+    'settings.moderation': { ru: '🛡️ Модерация', en: '🛡️ Moderation' },
+    'settings.moderation_desc': { ru: 'Удалять спам, рекламу, 18+', en: 'Remove spam, ads, 18+' },
+    'settings.antiflood': { ru: '🌊 Антифлуд', en: '🌊 Antiflood' },
+    'settings.antiflood_desc': { ru: 'Мут за флуд', en: 'Mute for flooding' },
+    'settings.ocr': { ru: '📸 OCR фото/видео', en: '📸 OCR photo/video' },
+    'settings.ocr_desc': { ru: 'Читать текст с картинок', en: 'Read text from images' },
+    'settings.hint': { ru: 'Изменения применяются в течение 30 секунд', en: 'Changes apply within 30 seconds' },
+    'settings.applying': { ru: '⏳ Применяется...', en: '⏳ Applying...' },
+    'settings.error': { ru: 'Ошибка', en: 'Error' },
+    'settings.no_access': { ru: 'Откройте через Telegram', en: 'Open via Telegram' },
+
     'modal.btn_open_group': { ru: '🚪 Открыть группу', en: '🚪 Open group' },
     'modal.btn_open_channel': { ru: '📢 Открыть канал', en: '📢 Open channel' },
 
