@@ -618,6 +618,21 @@ async function checkAdminStatus() {
 function openAdminModal() {
     const overlay = document.getElementById('admin-overlay');
     if (overlay) overlay.style.display = 'flex';
+
+    // Загружаем начальный таб
+    loadAdminTab('summary');
+
+    // Привязываем обработчики табов (один раз)
+    if (!window._adminTabsBound) {
+        document.querySelectorAll('.admin-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                loadAdminTab(tab.dataset.tab);
+            });
+        });
+        window._adminTabsBound = true;
+    }
 }
 
 function closeAdminModal() {
@@ -647,3 +662,244 @@ document.addEventListener('DOMContentLoaded', () => {
 
 window.checkAdminStatus = checkAdminStatus;
 window.openAdminModal = openAdminModal;
+
+// ===== АДМИН-ПАНЕЛЬ: ЗАГРУЗКА ДАННЫХ =====
+let adminCurrentTab = 'summary';
+
+async function loadAdminTab(tab) {
+    adminCurrentTab = tab;
+    const content = document.getElementById('admin-content');
+    if (!content) return;
+
+    content.innerHTML = `<p class="admin-loading">${t('groups.loading')}</p>`;
+
+    try {
+        if (tab === 'summary') await loadAdminSummary();
+        else if (tab === 'bans') await loadAdminBans();
+        else if (tab === 'violators') await loadAdminViolators();
+        else if (tab === 'deleted') await loadAdminDeleted();
+        else if (tab === 'roles') await loadAdminRoles();
+    } catch (e) {
+        console.error('loadAdminTab error:', e);
+        content.innerHTML = `<p class="admin-empty">${t('admin.error')}</p>`;
+    }
+}
+
+async function loadAdminSummary() {
+    const content = document.getElementById('admin-content');
+    const resp = await fetch(`${API_BASE}/api/admin/summary?user_id=${user.id}`);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const data = await resp.json();
+    const s = data.summary || {};
+
+    const tiles = [
+        { icon: '📢', label: t('stats.chats'), value: s.total_chats || 0 },
+        { icon: '🗑', label: t('stats.deleted'), value: s.total_deleted || 0 },
+        { icon: '⚖️', label: t('stats.bans'), value: s.total_bans || 0 },
+        { icon: '⚠️', label: 'Нарушений', value: s.total_violations || 0 },
+        { icon: '👤', label: 'Нарушителей', value: s.total_violators || 0 },
+        { icon: '👑', label: 'Админов', value: (s.admins || []).length },
+    ];
+
+    content.innerHTML = `
+        <div class="admin-summary-grid">
+            ${tiles.map(t => `
+                <div class="admin-summary-tile">
+                    <div class="admin-summary-icon">${t.icon}</div>
+                    <div class="admin-summary-value">${t.value}</div>
+                    <div class="admin-summary-label">${t.label}</div>
+                </div>
+            `).join('')}
+        </div>
+        <p style="text-align:center; font-size:11px; color:var(--tg-theme-hint-color, #999); margin-top:12px;">
+            Sync: ${s.synced_at ? s.synced_at.slice(0, 16).replace('T', ' ') : '—'}
+        </p>
+    `;
+}
+
+async function loadAdminBans() {
+    const content = document.getElementById('admin-content');
+    const resp = await fetch(`${API_BASE}/api/admin/bans?user_id=${user.id}&limit=50`);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const data = await resp.json();
+    const bans = data.bans || [];
+
+    if (!bans.length) {
+        content.innerHTML = `<p class="admin-empty">${t('admin.no_data')}</p>`;
+        return;
+    }
+
+    content.innerHTML = bans.map(b => {
+        const name = b.username || `ID ${b.user_id}`;
+        const reason = (b.reason || '').slice(0, 80);
+        const date = (b.ban_date || '').slice(0, 16).replace('T', ' ');
+        const action = b.action || 'ban';
+        const badgeClass = action === 'mute' ? 'gold' : action === 'perm_ban' ? 'warn' : '';
+        const badgeText = action === 'mute' ? '🔇 MUTE' : action === 'perm_ban' ? '🚫 PERM' : '⚖️ BAN';
+
+        return `
+            <div class="admin-item">
+                <div class="admin-item-row">
+                    <div class="admin-item-main">
+                        <div class="admin-item-name">${escapeHtml(name)}</div>
+                        <div class="admin-item-meta">
+                            ${escapeHtml(reason)}<br>
+                            🕐 ${date}
+                        </div>
+                    </div>
+                    <span class="admin-item-badge ${badgeClass}">${badgeText}</span>
+                </div>
+                <div class="admin-item-actions">
+                    <button class="admin-action-btn danger"
+                            onclick="adminAction('unban', ${b.user_id}, ${b.chat_id}, this)">
+                        ${t('admin.unban')}
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+async function loadAdminViolators() {
+    const content = document.getElementById('admin-content');
+    const resp = await fetch(`${API_BASE}/api/admin/violators?user_id=${user.id}&limit=50`);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const data = await resp.json();
+    const violators = data.violators || [];
+
+    if (!violators.length) {
+        content.innerHTML = `<p class="admin-empty">${t('admin.no_data')}</p>`;
+        return;
+    }
+
+    content.innerHTML = violators.map(v => {
+        const name = v.first_name || v.username || `ID ${v.user_id}`;
+        return `
+            <div class="admin-item">
+                <div class="admin-item-row">
+                    <div class="admin-item-main">
+                        <div class="admin-item-name">${escapeHtml(name)}</div>
+                        <div class="admin-item-meta">ID: ${v.user_id}</div>
+                    </div>
+                    <span class="admin-item-badge warn">${v.violation_count} ⚠️</span>
+                </div>
+                <div class="admin-item-actions">
+                    <button class="admin-action-btn"
+                            onclick="adminAction('reset_violations', ${v.user_id}, null, this)">
+                        ${t('admin.reset')}
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+async function loadAdminDeleted() {
+    const content = document.getElementById('admin-content');
+    const resp = await fetch(`${API_BASE}/api/admin/deleted?user_id=${user.id}&limit=50`);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const data = await resp.json();
+    const items = data.deleted || [];
+
+    if (!items.length) {
+        content.innerHTML = `<p class="admin-empty">${t('admin.no_data')}</p>`;
+        return;
+    }
+
+    content.innerHTML = items.map(d => {
+        const name = d.first_name || d.username || `ID ${d.user_id}`;
+        const date = (d.delete_time || '').slice(0, 16).replace('T', ' ');
+        const text = (d.text || '').slice(0, 200);
+        const reason = (d.reason || '').slice(0, 60);
+
+        return `
+            <div class="admin-item">
+                <div class="admin-item-name">${escapeHtml(name)}</div>
+                <div class="admin-item-meta">🕐 ${date} · ${escapeHtml(reason)}</div>
+                <div class="admin-item-text">${escapeHtml(text)}</div>
+            </div>
+        `;
+    }).join('');
+}
+
+async function loadAdminRoles() {
+    const content = document.getElementById('admin-content');
+    const resp = await fetch(`${API_BASE}/api/admin/summary?user_id=${user.id}`);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const data = await resp.json();
+    const s = data.summary || {};
+
+    const admins = s.admins || [];
+    const whitelist = s.whitelist || [];
+
+    const renderList = (ids, role) => {
+        if (!ids.length) return `<p class="admin-empty">${t('admin.no_data')}</p>`;
+        return ids.map(uid => `
+            <div class="admin-item">
+                <div class="admin-item-row">
+                    <div class="admin-item-main">
+                        <div class="admin-item-name">ID: ${uid}</div>
+                    </div>
+                    <span class="admin-item-badge ${role === 'admin' ? 'gold' : ''}">${role.toUpperCase()}</span>
+                </div>
+                ${uid === user.id ? '<div class="admin-item-meta">Это вы</div>' : `
+                <div class="admin-item-actions">
+                    <button class="admin-action-btn danger"
+                            onclick="adminAction('remove_${role}', ${uid}, null, this)">
+                        ${t('admin.remove')}
+                    </button>
+                </div>`}
+            </div>
+        `).join('');
+    };
+
+    content.innerHTML = `
+        <div class="admin-role-section">
+            <div class="admin-role-title">👑 Админы (${admins.length})</div>
+            ${renderList(admins, 'admin')}
+        </div>
+        <div class="admin-role-section">
+            <div class="admin-role-title">🛡️ Вайтлист (${whitelist.length})</div>
+            ${renderList(whitelist, 'whitelist')}
+        </div>
+    `;
+}
+
+async function adminAction(action, targetId, chatId, btn) {
+    if (!confirm(t('admin.confirm_' + (action.includes('unban') ? 'unban' : action.includes('reset') ? 'reset' : 'remove')))) return;
+
+    if (btn) btn.disabled = true;
+
+    try {
+        const resp = await fetch(`${API_BASE}/api/admin/action`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                user_id: user.id,
+                action: action,
+                target_id: targetId,
+                chat_id: chatId,
+            })
+        });
+
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+
+        // Показываем уведомление
+        const msg = document.createElement('div');
+        msg.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#2ecc71;color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,0.3);';
+        msg.textContent = t('admin.action_sent') + ' · ' + t('admin.action_wait');
+        document.body.appendChild(msg);
+        setTimeout(() => msg.remove(), 3000);
+
+        // Обновляем текущий таб через 2 сек (ждём, пока бот применит)
+        setTimeout(() => loadAdminTab(adminCurrentTab), 2000);
+
+    } catch (e) {
+        console.error('adminAction error:', e);
+        alert(t('admin.error') + ': ' + e.message);
+        if (btn) btn.disabled = false;
+    }
+}
+
+window.adminAction = adminAction;
+window.loadAdminTab = loadAdminTab;
