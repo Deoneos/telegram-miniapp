@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ANTI_SPAM Bot</title>
-    <link rel="stylesheet" href="style.css?v=14">
+    <link rel="stylesheet" href="style.css?v=15">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
@@ -218,7 +218,16 @@
         </div>
     </div>
 
-    <script src="i18n.js?v=14"></script>
-    <script src="app.js?v=14"></script>
+    <!-- Help-модалка (для ghost mode и других пояснений) -->
+    <div class="help-overlay" id="help-overlay" style="display:none;">
+        <div class="help-modal">
+            <h3 class="help-modal-title" id="help-modal-title"></h3>
+            <div class="help-modal-body" id="help-modal-body"></div>
+            <button class="help-modal-close" id="help-modal-close" data-i18n="common.close">Закрыть</button>
+        </div>
+    </div>
+
+    <script src="i18n.js?v=15"></script>
+    <script src="app.js?v=15"></script>
 </body>
 </html>

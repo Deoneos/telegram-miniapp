@@ -96,6 +96,45 @@ const TRANSLATIONS = {
     'settings.error': { ru: 'Ошибка', en: 'Error' },
     'settings.no_access': { ru: 'Откройте через Telegram', en: 'Open via Telegram' },
 
+    // ===== Ghost mode =====
+    'settings.ghost': { ru: '👻 Призрачный режим', en: '👻 Ghost mode' },
+    'settings.ghost_desc': { ru: 'Автоудаление сообщений', en: 'Auto-delete messages' },
+    'settings.ghost_help_title': { ru: '👻 Что такое призрачный режим?', en: '👻 What is ghost mode?' },
+    'settings.ghost_help_body': {
+        ru: '<b>Все сообщения в группе будут автоматически удаляться через N секунд после отправки.</b>\n\n' +
+            '<b>Зачем это нужно:</b>\n' +
+            '• 👥 Группы для знакомств, флирта — без истории\n' +
+            '• 🎉 Временные чаты (мероприятия, конференции)\n' +
+            '• 🔒 Приватные обсуждения без следов\n' +
+            '• 🧹 Чистка сервисных уведомлений (вход/выход)\n\n' +
+            '<b>Что важно знать:</b>\n' +
+            '• 📸 Скриншоты никто не отменял\n' +
+            '• 📵 Если человек оффлайн — увидит только push\n' +
+            '• 🛡 Бот должен быть админом с правом удалять\n' +
+            '• ⏱ Минимум 10 сек, максимум 1 час\n\n' +
+            '<b>Пример:</b> timeout = 60 сек → сообщение исчезнет через минуту.',
+        en: '<b>All messages in the group will be auto-deleted N seconds after posting.</b>\n\n' +
+            '<b>Why you might need it:</b>\n' +
+            '• 👥 Dating, flirt chats — no history\n' +
+            '• 🎉 Temporary chats (events, conferences)\n' +
+            '• 🔒 Private discussions without traces\n' +
+            '• 🧹 Cleaning service notifications (join/leave)\n\n' +
+            '<b>Important to know:</b>\n' +
+            '• 📸 Screenshots are still possible\n' +
+            '• 📵 If user is offline — only push notification\n' +
+            '• 🛡 Bot must be admin with delete permission\n' +
+            '• ⏱ Min 10 sec, max 1 hour\n\n' +
+            '<b>Example:</b> timeout = 60 sec → message disappears after a minute.'
+    },
+    'settings.ghost_timeout': { ru: '⏱ Удалять через:', en: '⏱ Delete after:' },
+    'settings.ghost_seconds': { ru: 'секунд', en: 'seconds' },
+    'settings.ghost_delete_all': { ru: 'Что удалять:', en: 'What to delete:' },
+    'settings.ghost_all': { ru: 'Все сообщения', en: 'All messages' },
+    'settings.ghost_service': { ru: 'Только сервисные (вход/выход)', en: 'Only service (join/leave)' },
+    'settings.ghost_save': { ru: '💾 Сохранить', en: '💾 Save' },
+    'settings.ghost_saved': { ru: '✅ Сохранено', en: '✅ Saved' },
+    'common.close': { ru: 'Закрыть', en: 'Close' },
+
     // ===== Кастомные тексты =====
     'custom_texts.title': { ru: '✏️ Тексты модерации', en: '✏️ Moderation texts' },
     'custom_texts.hint': {

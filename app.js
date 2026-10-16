@@ -229,23 +229,182 @@ function renderSettings(s) {
         { key: 'ocr_enabled',        label: t('settings.ocr'),        desc: t('settings.ocr_desc') },
     ];
 
-    container.innerHTML = items.map(it => `
+    const ghostEnabled = s.ghost_enabled == 1;
+    const ghostTimeout = s.ghost_timeout_seconds || 60;
+    const ghostAll = s.ghost_delete_all == 1;
+
+    container.innerHTML =
+        items.map(it => `
+            <div class="setting-row">
+                <div class="setting-info">
+                    <div class="setting-name">${it.label}</div>
+                    <div class="setting-desc">${it.desc}</div>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" data-key="${it.key}" ${s[it.key] ? 'checked' : ''}>
+                    <span class="slider"></span>
+                </label>
+            </div>
+        `).join('')
+        + `
         <div class="setting-row">
             <div class="setting-info">
-                <div class="setting-name">${it.label}</div>
-                <div class="setting-desc">${it.desc}</div>
+                <div class="setting-name">${t('settings.ghost')}</div>
+                <div class="setting-desc">${t('settings.ghost_desc')}</div>
             </div>
+            <button type="button" class="setting-help-btn" data-help="ghost" title="?">?</button>
             <label class="switch">
-                <input type="checkbox" data-key="${it.key}" ${s[it.key] ? 'checked' : ''}>
+                <input type="checkbox" data-key="ghost_enabled" ${ghostEnabled ? 'checked' : ''}>
                 <span class="slider"></span>
             </label>
         </div>
-    `).join('');
+        <div class="ghost-settings-block ${ghostEnabled ? 'active' : ''}" id="ghost-settings-block">
+            <label class="ghost-label">${t('settings.ghost_timeout')}</label>
+            <div class="ghost-timeout-row">
+                <input type="number" class="ghost-timeout-input" id="ghost-timeout-input"
+                       min="10" max="3600" step="10" value="${ghostTimeout}">
+                <span class="ghost-timeout-unit">${t('settings.ghost_seconds')}</span>
+            </div>
 
+            <label class="ghost-label">${t('settings.ghost_delete_all')}</label>
+            <label class="ghost-radio">
+                <input type="radio" name="ghost-delete-mode" value="1" ${ghostAll ? 'checked' : ''}>
+                <span>${t('settings.ghost_all')}</span>
+            </label>
+            <label class="ghost-radio">
+                <input type="radio" name="ghost-delete-mode" value="0" ${!ghostAll ? 'checked' : ''}>
+                <span>${t('settings.ghost_service')}</span>
+            </label>
+
+            <button type="button" class="ghost-save-btn" id="ghost-save-btn">
+                ${t('settings.ghost_save')}
+            </button>
+        </div>
+        `;
+
+    // Обычные тумблеры
     container.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-        cb.addEventListener('change', () => toggleSetting(cb));
+        if (cb.dataset.key !== 'ghost_enabled') {
+            cb.addEventListener('change', () => toggleSetting(cb));
+        }
     });
+
+    // Ghost toggle
+    const ghostCb = container.querySelector('input[data-key="ghost_enabled"]');
+    if (ghostCb) {
+        ghostCb.addEventListener('change', async () => {
+            const block = document.getElementById('ghost-settings-block');
+            if (block) {
+                block.classList.toggle('active', ghostCb.checked);
+            }
+            await toggleSetting(ghostCb);
+        });
+    }
+
+    // Кнопка "?"
+    const helpBtn = container.querySelector('.setting-help-btn[data-help="ghost"]');
+    if (helpBtn) {
+        helpBtn.addEventListener('click', () => showHelp(
+            t('settings.ghost_help_title'),
+            t('settings.ghost_help_body')
+        ));
+    }
+
+    // Кнопка "Сохранить" в ghost-блоке
+    const saveBtn = document.getElementById('ghost-save-btn');
+    if (saveBtn) {
+        saveBtn.addEventListener('click', saveGhostSettings);
+    }
 }
+
+
+async function saveGhostSettings() {
+    const chatId = currentChartChatId;
+    if (!chatId || !user || !user.id) return;
+
+    const timeoutInput = document.getElementById('ghost-timeout-input');
+    const radioAll = document.querySelector('input[name="ghost-delete-mode"][value="1"]');
+
+    let timeout = parseInt(timeoutInput?.value) || 60;
+    if (timeout < 10) timeout = 10;
+    if (timeout > 3600) timeout = 3600;
+
+    const deleteAll = radioAll && radioAll.checked ? 1 : 0;
+
+    const saveBtn = document.getElementById('ghost-save-btn');
+    if (saveBtn) {
+        saveBtn.disabled = true;
+        saveBtn.textContent = t('settings.applying');
+    }
+
+    try {
+        // Сохраняем timeout
+        let resp = await fetch(`${API_BASE}/api/chat/${chatId}/settings`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: user.id, key: 'ghost_timeout_seconds', value: timeout })
+        });
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+
+        // Сохраняем режим
+        resp = await fetch(`${API_BASE}/api/chat/${chatId}/settings`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: user.id, key: 'ghost_delete_all', value: deleteAll })
+        });
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+
+        // Тост
+        const msg = document.createElement('div');
+        msg.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#2ecc71;color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,0.3);';
+        msg.textContent = t('settings.ghost_saved');
+        document.body.appendChild(msg);
+        setTimeout(() => msg.remove(), 2500);
+    } catch (e) {
+        console.error('saveGhostSettings error:', e);
+        alert(t('settings.error') + ': ' + e.message);
+    } finally {
+        if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.textContent = t('settings.ghost_save');
+        }
+    }
+}
+
+
+// ===== Help-модалка =====
+function showHelp(title, body) {
+    const overlay = document.getElementById('help-overlay');
+    const titleEl = document.getElementById('help-modal-title');
+    const bodyEl = document.getElementById('help-modal-body');
+
+    if (!overlay || !titleEl || !bodyEl) return;
+
+    titleEl.textContent = title;
+    bodyEl.innerHTML = body.replace(/\n/g, '<br>');
+    overlay.style.display = 'flex';
+}
+
+function hideHelp() {
+    const overlay = document.getElementById('help-overlay');
+    if (overlay) overlay.style.display = 'none';
+}
+
+// Привязка close и overlay click
+document.addEventListener('DOMContentLoaded', () => {
+    const closeBtn = document.getElementById('help-modal-close');
+    if (closeBtn) closeBtn.addEventListener('click', hideHelp);
+
+    const overlay = document.getElementById('help-overlay');
+    if (overlay) {
+        overlay.addEventListener('click', (e) => {
+            if (e.target.id === 'help-overlay') hideHelp();
+        });
+    }
+});
+
+window.showHelp = showHelp;
+window.hideHelp = hideHelp;
 
 async function toggleSetting(cb) {
     const chatId = currentChartChatId;

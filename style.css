@@ -1181,3 +1181,189 @@ input:disabled + .slider {
     color: var(--tg-theme-hint-color, #999);
     border: 1px solid rgba(0, 0, 0, 0.08);
 }
+
+
+/* ===== GHOST MODE UI ===== */
+.setting-help-btn {
+    background: transparent;
+    border: 1px solid var(--tg-theme-hint-color, #999);
+    color: var(--tg-theme-hint-color, #999);
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    padding: 0;
+    line-height: 1;
+    margin-left: 6px;
+    transition: all 0.15s;
+}
+
+.setting-help-btn:active {
+    background: rgba(128,128,128,0.15);
+    transform: scale(0.92);
+}
+
+.ghost-settings-block {
+    background: rgba(128, 80, 200, 0.08);
+    border: 1px solid rgba(128, 80, 200, 0.2);
+    border-radius: 10px;
+    padding: 12px;
+    margin-top: 6px;
+    margin-bottom: 8px;
+    display: none;
+}
+
+.ghost-settings-block.active {
+    display: block;
+}
+
+.ghost-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--tg-theme-text-color, #000);
+    margin-bottom: 6px;
+    display: block;
+}
+
+.ghost-timeout-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.ghost-timeout-input {
+    width: 90px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    background: var(--tg-theme-bg-color, #fff);
+    color: var(--tg-theme-text-color, #000);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    outline: none;
+}
+
+.ghost-timeout-input:focus {
+    border-color: var(--tg-theme-button-color, #2481cc);
+}
+
+.ghost-timeout-unit {
+    font-size: 12px;
+    color: var(--tg-theme-hint-color, #999);
+}
+
+.ghost-radio {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--tg-theme-text-color, #000);
+    padding: 8px 10px;
+    background: var(--tg-theme-bg-color, #fff);
+    border-radius: 8px;
+    margin-bottom: 6px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.15s;
+}
+
+.ghost-radio:hover {
+    border-color: rgba(36, 129, 204, 0.3);
+}
+
+.ghost-radio input[type="radio"] {
+    accent-color: var(--tg-theme-button-color, #2481cc);
+    cursor: pointer;
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    flex-shrink: 0;
+}
+
+.ghost-save-btn {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    background: var(--tg-theme-button-color, #2481cc);
+    color: var(--tg-theme-button-text-color, #fff);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 6px;
+    transition: all 0.15s;
+}
+
+.ghost-save-btn:active {
+    transform: scale(0.98);
+    opacity: 0.9;
+}
+
+/* Help-модалка для ghost */
+.help-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    box-sizing: border-box;
+    animation: fadeIn 0.2s;
+}
+
+.help-modal {
+    background: var(--tg-theme-bg-color, #fff);
+    width: 100%;
+    max-width: 420px;
+    max-height: 85vh;
+    overflow-y: auto;
+    border-radius: 18px;
+    padding: 22px 20px;
+    box-sizing: border-box;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    animation: slideUp 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.help-modal-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    text-align: center;
+    color: var(--tg-theme-text-color, #000);
+}
+
+.help-modal-body {
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--tg-theme-text-color, #000);
+    margin-bottom: 16px;
+}
+
+.help-modal-body b {
+    color: var(--tg-theme-text-color, #000);
+}
+
+.help-modal-close {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    background: var(--tg-theme-button-color, #2481cc);
+    color: var(--tg-theme-button-text-color, #fff);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
