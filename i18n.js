@@ -96,6 +96,45 @@ const TRANSLATIONS = {
     'settings.error': { ru: 'Ошибка', en: 'Error' },
     'settings.no_access': { ru: 'Откройте через Telegram', en: 'Open via Telegram' },
 
+    // ===== Кастомные тексты =====
+    'custom_texts.title': { ru: '✏️ Тексты модерации', en: '✏️ Moderation texts' },
+    'custom_texts.hint': {
+        ru: 'Настройте сообщения бота под стиль вашей группы',
+        en: 'Customize bot messages for your group style'
+    },
+    'custom_texts.open': { ru: '✏️ Настроить тексты', en: '✏️ Configure texts' },
+    'custom_texts.modal_title': { ru: 'Тексты модерации', en: 'Moderation texts' },
+    'custom_texts.modal_subtitle': {
+        ru: 'Сообщения будут отправляться от имени бота',
+        en: 'Messages will be sent on behalf of the bot'
+    },
+    'custom_texts.placeholder_default': {
+        ru: 'По умолчанию — стандартный текст бота',
+        en: 'Default — standard bot text'
+    },
+    'custom_texts.save': { ru: '💾 Сохранить', en: '💾 Save' },
+    'custom_texts.reset': { ru: '♻️ Сбросить', en: '♻️ Reset' },
+    'custom_texts.saved': { ru: '✅ Сохранено', en: '✅ Saved' },
+    'custom_texts.reset_done': { ru: '♻️ Сброшено на стандарт', en: '♻️ Reset to default' },
+    'custom_texts.applying': { ru: '⏳ Применяется...', en: '⏳ Applying...' },
+    'custom_texts.error': { ru: 'Ошибка', en: 'Error' },
+    'custom_texts.empty': { ru: 'Ничего не настроено', en: 'Nothing configured' },
+
+    // Названия полей
+    'custom_texts.label_public_warn': { ru: '⚠️ Предупреждение в группе', en: '⚠️ Warning in group' },
+    'custom_texts.label_mute': { ru: '🔇 Публичный мут', en: '🔇 Public mute' },
+    'custom_texts.label_ban': { ru: '🚫 Публичный бан', en: '🚫 Public ban' },
+    'custom_texts.label_perm_ban': { ru: '⛔ Постоянный бан', en: '⛔ Permanent ban' },
+    'custom_texts.label_dm_text': { ru: '📩 ЛС предупреждение', en: '📩 DM warning' },
+    'custom_texts.label_flood_muted': { ru: '🌊 Мут за флуд', en: '🌊 Flood mute' },
+    'custom_texts.label_flood_mass_spam': { ru: '📢 Массовая рассылка', en: '📢 Mass spam' },
+
+    // Подсказки про плейсхолдеры
+    'custom_texts.hint_name': { ru: 'Переменные: {name}, {duration}, {until}', en: 'Vars: {name}, {duration}, {until}' },
+    'custom_texts.hint_dm': { ru: 'Переменные: {chat_title}, {reason}', en: 'Vars: {chat_title}, {reason}' },
+    'custom_texts.hint_flood': { ru: 'Переменные: {user}, {minutes}', en: 'Vars: {user}, {minutes}' },
+    'custom_texts.hint_mass_spam': { ru: 'Переменные: {username}, {days}', en: 'Vars: {username}, {days}' },
+
     'modal.btn_open_group': { ru: '🚪 Открыть группу', en: '🚪 Open group' },
     'modal.btn_open_channel': { ru: '📢 Открыть канал', en: '📢 Open channel' },
 

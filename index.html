@@ -163,6 +163,16 @@
                 </p>
             </div>
 
+            <div class="modal-settings-container">
+                <h4 class="modal-chart-title" data-i18n="custom_texts.title">✏️ Тексты модерации</h4>
+                <p class="custom-texts-hint" data-i18n="custom_texts.hint">
+                    Настройте сообщения бота под стиль вашей группы
+                </p>
+                <button class="btn btn-secondary custom-texts-open-btn" id="custom-texts-open-btn">
+                    <span data-i18n="custom_texts.open">✏️ Настроить тексты</span>
+                </button>
+            </div>
+
             <div class="modal-violators-container">
                 <h4 class="modal-chart-title" data-i18n="violators.title">🏆 Топ нарушителей</h4>
                 <div class="violators-list" id="violators-list">
@@ -190,7 +200,25 @@
         </div>
     </div>
 
-    <script src="i18n.js?v=13"></script>
-    <script src="app.js?v=13"></script>
+    <!-- Модалка: тексты модерации -->
+    <div class="modal-overlay" id="custom-texts-overlay" style="display:none;">
+        <div class="modal custom-texts-modal">
+            <button class="modal-close" id="custom-texts-close">✕</button>
+            <div class="modal-header">
+                <div class="modal-icon">✏️</div>
+                <h3 class="modal-title" data-i18n="custom_texts.modal_title">Тексты модерации</h3>
+                <p class="modal-subtitle" data-i18n="custom_texts.modal_subtitle">
+                    Сообщения будут отправляться от имени бота
+                </p>
+            </div>
+
+            <div class="custom-texts-list" id="custom-texts-list">
+                <p class="violators-loading" data-i18n="groups.loading">Загрузка...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="i18n.js?v=14"></script>
+    <script src="app.js?v=14"></script>
 </body>
 </html>

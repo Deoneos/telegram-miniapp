@@ -903,3 +903,158 @@ async function adminAction(action, targetId, chatId, btn) {
 
 window.adminAction = adminAction;
 window.loadAdminTab = loadAdminTab;
+
+// ===== КАСТОМНЫЕ ТЕКСТЫ =====
+const CUSTOM_TEXT_FIELDS = [
+    { key: 'public.warn', labelKey: 'custom_texts.label_public_warn', hintKey: 'custom_texts.hint_name',
+      placeholder: '⚠️ {name}, ваше сообщение удалено. Это предупреждение — при повторе будет мут.' },
+    { key: 'public.mute_until', labelKey: 'custom_texts.label_mute', hintKey: 'custom_texts.hint_name',
+      placeholder: '🔇 {name} замучен на {duration}.\nРазблокировка: {until} (МСК)' },
+    { key: 'public.ban_until', labelKey: 'custom_texts.label_ban', hintKey: 'custom_texts.hint_name',
+      placeholder: '🚫 {name} заблокирован на {duration}.\nРазблокировка: {until} (МСК)' },
+    { key: 'public.perm_ban', labelKey: 'custom_texts.label_perm_ban', hintKey: 'custom_texts.hint_name',
+      placeholder: '🚫 {name} заблокирован навсегда.' },
+    { key: 'warn.dm_text', labelKey: 'custom_texts.label_dm_text', hintKey: 'custom_texts.hint_dm',
+      placeholder: '⚠️ <b>Предупреждение</b>\n\nВаше сообщение в группе <b>{chat_title}</b> было удалено.\n\n📋 Причина: {reason}' },
+    { key: 'flood.muted', labelKey: 'custom_texts.label_flood_muted', hintKey: 'custom_texts.hint_flood',
+      placeholder: '🌊 {user} замучен на {minutes} минут за флуд.' },
+    { key: 'flood.mass_spam', labelKey: 'custom_texts.label_flood_mass_spam', hintKey: 'custom_texts.hint_mass_spam',
+      placeholder: '🚫 Пользователь @{username} заблокирован на {days} дней за массовую рассылку.' },
+];
+
+let customTextsChatId = null;
+
+async function openCustomTextsModal() {
+    if (!currentChartChatId) return;
+
+    customTextsChatId = currentChartChatId;
+    document.getElementById('custom-texts-overlay').style.display = 'flex';
+    await loadCustomTexts(customTextsChatId);
+}
+
+function closeCustomTextsModal() {
+    document.getElementById('custom-texts-overlay').style.display = 'none';
+}
+
+async function loadCustomTexts(chatId) {
+    const container = document.getElementById('custom-texts-list');
+    if (!container) return;
+
+    container.innerHTML = `<p class="violators-loading">${t('groups.loading')}</p>`;
+
+    let texts = {};
+    try {
+        const resp = await fetch(`${API_BASE}/api/chat/${chatId}/custom_texts?user_id=${user.id}`);
+        if (resp.ok) {
+            const data = await resp.json();
+            texts = data.texts || {};
+        }
+    } catch (e) {
+        console.warn('loadCustomTexts error:', e);
+    }
+
+    container.innerHTML = CUSTOM_TEXT_FIELDS.map(f => {
+        const current = texts[f.key] || '';
+        const isCustom = !!current;
+        const value = isCustom ? current : '';
+        const placeholder = escapeHtml(f.placeholder);
+        const label = t(f.labelKey);
+        const hint = t(f.hintKey);
+        const badgeClass = isCustom ? 'custom' : 'default';
+        const badgeText = isCustom ? '✏️ Custom' : 'Default';
+
+        return `
+            <div class="custom-texts-item" data-key="${f.key}">
+                <div class="custom-texts-item-header">
+                    <div class="custom-texts-item-label">${label}</div>
+                    <div class="custom-texts-item-status ${badgeClass}">${badgeText}</div>
+                </div>
+                <textarea class="custom-texts-textarea"
+                          data-key="${f.key}"
+                          placeholder="${placeholder}">${escapeHtml(value)}</textarea>
+                <div class="custom-texts-hint-vars">${hint}</div>
+                <div class="custom-texts-actions">
+                    <button class="custom-texts-btn save" data-action="save" data-key="${f.key}">
+                        ${t('custom_texts.save')}
+                    </button>
+                    <button class="custom-texts-btn reset" data-action="reset" data-key="${f.key}">
+                        ${t('custom_texts.reset')}
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    // Обработчики
+    container.querySelectorAll('.custom-texts-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const key = btn.dataset.key;
+            const action = btn.dataset.action;
+            const ta = container.querySelector(`textarea[data-key="${key}"]`);
+            const value = ta ? ta.value.trim() : '';
+
+            if (action === 'save') {
+                saveCustomText(customTextsChatId, key, value, btn);
+            } else {
+                saveCustomText(customTextsChatId, key, '', btn);
+            }
+        });
+    });
+}
+
+async function saveCustomText(chatId, key, value, btn) {
+    if (!user || !user.id) return;
+
+    btn.disabled = true;
+    const oldText = btn.textContent;
+    btn.textContent = t('custom_texts.applying');
+
+    try {
+        const resp = await fetch(`${API_BASE}/api/chat/${chatId}/custom_texts`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: user.id, key: key, value: value })
+        });
+
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+
+        // Тост
+        const msg = document.createElement('div');
+        msg.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#2ecc71;color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,0.3);';
+        msg.textContent = value ? t('custom_texts.saved') : t('custom_texts.reset_done');
+        document.body.appendChild(msg);
+        setTimeout(() => msg.remove(), 2500);
+
+        // Перезагрузить список через 1 сек
+        setTimeout(() => loadCustomTexts(chatId), 1000);
+    } catch (e) {
+        console.error('saveCustomText error:', e);
+        alert(t('custom_texts.error') + ': ' + e.message);
+    } finally {
+        btn.disabled = false;
+        btn.textContent = oldText;
+    }
+}
+
+// Инициализация: привязываем кнопку и закрытие
+document.addEventListener('DOMContentLoaded', () => {
+    const openBtn = document.getElementById('custom-texts-open-btn');
+    if (openBtn) {
+        openBtn.addEventListener('click', openCustomTextsModal);
+    }
+
+    const closeBtn = document.getElementById('custom-texts-close');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closeCustomTextsModal);
+    }
+
+    const overlay = document.getElementById('custom-texts-overlay');
+    if (overlay) {
+        overlay.addEventListener('click', (e) => {
+            if (e.target.id === 'custom-texts-overlay') closeCustomTextsModal();
+        });
+    }
+});
+
+window.openCustomTextsModal = openCustomTextsModal;
+window.closeCustomTextsModal = closeCustomTextsModal;
