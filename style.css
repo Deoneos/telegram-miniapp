@@ -1477,22 +1477,26 @@ input:checked + .slider:before {
 }
 
 /* Стилизация кнопки меню */
+
+
+
+/* Кнопка меню (Шильдик) */
 .menu-btn {
-    background: var(--tg-theme-secondary-bg-color, rgba(255, 255, 255, 0.1));
+    background: var(--tg-theme-button-color, #5288c1);
+    color: var(--tg-theme-button-text-color, #ffffff);
     border-radius: 12px;
     width: 44px;
     height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
     border: none;
     cursor: pointer;
-    color: var(--tg-theme-text-color, #ffffff);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     transition: transform 0.1s;
     padding: 0;
-    padding-bottom: 6px; /* Небольшой сдвиг, чтобы три точки стояли по центру визуально */
 }
 .menu-btn:active {
     transform: scale(0.95);
+    opacity: 0.8;
 }
