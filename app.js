@@ -261,12 +261,23 @@ function renderSettings(s) {
         </div>
         <div class="ghost-settings-block ${ghostEnabled ? 'active' : ''}" id="ghost-settings-block">
             <label class="ghost-label">${t('settings.ghost_trigger')}</label>
-            <select id="ghost-trigger-select" class="ghost-trigger-select" style="width: 100%; padding: 8px; margin-bottom: 12px; border-radius: 8px; background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2);">
-                <option value="0" ${ghostTrigger == 0 ? 'selected' : ''}>${t('settings.ghost_trigger_all')}</option>
-                <option value="1" ${ghostTrigger == 1 ? 'selected' : ''}>${t('settings.ghost_trigger_links')}</option>
-                <option value="2" ${ghostTrigger == 2 ? 'selected' : ''}>${t('settings.ghost_trigger_text')}</option>
-                <option value="3" ${ghostTrigger == 3 ? 'selected' : ''}>${t('settings.ghost_trigger_media')}</option>
-            </select>
+            
+            <label class="ghost-radio">
+                <input type="radio" name="ghost_trigger" value="0" ${ghostTrigger == 0 ? 'checked' : ''}>
+                ${t('settings.ghost_trigger_all')}
+            </label>
+            <label class="ghost-radio">
+                <input type="radio" name="ghost_trigger" value="1" ${ghostTrigger == 1 ? 'checked' : ''}>
+                ${t('settings.ghost_trigger_links')}
+            </label>
+            <label class="ghost-radio">
+                <input type="radio" name="ghost_trigger" value="2" ${ghostTrigger == 2 ? 'checked' : ''}>
+                ${t('settings.ghost_trigger_text')}
+            </label>
+            <label class="ghost-radio">
+                <input type="radio" name="ghost_trigger" value="3" ${ghostTrigger == 3 ? 'checked' : ''}>
+                ${t('settings.ghost_trigger_media')}
+            </label>
             
             <label class="ghost-label">${t('settings.ghost_timeout')}</label>
             <div class="ghost-timeout-row">
@@ -336,9 +347,12 @@ async function saveGhostSettings() {
 
     let timeout = parseInt(timeoutInput?.value) || 60;
     if (timeout < 10) timeout = 10;
-    if (timeout > 3600) timeout = 3600;
+    if (timeout > 86400) timeout = 86400;
 
     const deleteAll = radioAll && radioAll.checked ? 1 : 0;
+    
+    const triggerRadio = document.querySelector('input[name="ghost_trigger"]:checked');
+    const ghostTrigger = triggerRadio ? parseInt(triggerRadio.value) : 0;
 
     const saveBtn = document.getElementById('ghost-save-btn');
     if (saveBtn) {
@@ -360,6 +374,14 @@ async function saveGhostSettings() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ user_id: user.id, key: 'ghost_delete_all', value: deleteAll })
+        });
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+
+        // Сохраняем триггер
+        resp = await fetch(`${API_BASE}/api/chat/${chatId}/settings`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: user.id, key: 'ghost_trigger', value: ghostTrigger })
         });
         if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
 
@@ -1188,6 +1210,14 @@ async function saveCustomText(chatId, key, value, btn) {
             body: JSON.stringify({ user_id: user.id, key: key, value: value })
         });
 
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+
+        // Сохраняем триггер
+        resp = await fetch(`${API_BASE}/api/chat/${chatId}/settings`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: user.id, key: 'ghost_trigger', value: ghostTrigger })
+        });
         if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
 
         // Тост
