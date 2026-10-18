@@ -29,13 +29,13 @@ function applyTheme(theme) {
     if (theme === 'light') {
         document.body.classList.remove('theme-dark');
         document.body.classList.add('theme-light');
-        if (btn) btn.textContent = '🌞';
+        if (btn) btn.textContent = '🌞 Светлая тема';
         if (tg.setHeaderColor) tg.setHeaderColor('#ffffff');
         if (tg.setBackgroundColor) tg.setBackgroundColor('#ffffff');
     } else {
         document.body.classList.remove('theme-light');
         document.body.classList.add('theme-dark');
-        if (btn) btn.textContent = '🌙';
+        if (btn) btn.textContent = '🌙 Тёмная тема';
         if (tg.setHeaderColor) tg.setHeaderColor('#17212b');
         if (tg.setBackgroundColor) tg.setBackgroundColor('#17212b');
     }
@@ -671,6 +671,26 @@ window.loadTimelineChart = loadTimelineChart;
 loadGroups();
 tg.ready();
 initTheme();
+
+// ===== ЛОГИКА БУРГЕР-МЕНЮ =====
+document.addEventListener('DOMContentLoaded', () => {
+    const menuBtn = document.getElementById('menu-toggle');
+    const dropdown = document.getElementById('dropdown-menu');
+    
+    if (menuBtn && dropdown) {
+        menuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+        });
+        
+        // Закрываем меню при клике в любое другое место
+        document.addEventListener('click', (e) => {
+            if (!dropdown.contains(e.target) && e.target !== menuBtn) {
+                dropdown.style.display = 'none';
+            }
+        });
+    }
+});
 
 // ===== ПИРОГ КАТЕГОРИЙ =====
 let categoriesChart = null;

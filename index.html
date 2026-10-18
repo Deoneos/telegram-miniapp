@@ -11,18 +11,24 @@
 <body>
     <div class="container">
         <!-- Шапка -->
-        <header class="header">
-            <div class="header-right" style="display: flex; align-items: center; gap: 12px;">
-                <button type="button" class="theme-btn" id="theme-toggle" aria-label="Theme" style="background: none; border: none; font-size: 20px; cursor: pointer; padding: 4px;">🌓</button>
-                <div class="lang-switch" role="group" aria-label="Language">
-                <button type="button" class="lang-btn" data-lang="ru">RU</button>
-                <button type="button" class="lang-btn" data-lang="en">EN</button>
+        <header class="header" style="position: relative;">
+            <!-- Кнопка меню в правом верхнем углу -->
+            <div class="header-top-bar" style="position: absolute; top: 16px; right: 16px; display: flex; align-items: center; gap: 10px; z-index: 100;">
+                <button type="button" class="admin-btn" id="admin-panel-btn" style="display:none; background: none; border: none; font-size: 20px; cursor: pointer; padding: 4px; color: var(--tg-theme-text-color, #fff);" title="Админ-панель">👑</button>
+                <button type="button" class="menu-btn" id="menu-toggle" style="background: none; border: none; font-size: 24px; cursor: pointer; padding: 4px; color: var(--tg-theme-text-color, #fff);">⋮</button>
             </div>
+
+            <!-- Выпадающее меню -->
+            <div id="dropdown-menu" style="display: none; position: absolute; top: 50px; right: 16px; background: var(--tg-theme-secondary-bg-color, #232e3c); border-radius: 12px; padding: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.3); z-index: 101; min-width: 150px;">
+                <div style="display: flex; justify-content: center; gap: 8px; margin-bottom: 8px; padding: 8px; border-bottom: 1px solid var(--tg-theme-hint-color, #444);">
+                    <button type="button" class="lang-btn" data-lang="ru" style="background: none; border: none; color: var(--tg-theme-text-color, #fff); cursor: pointer; padding: 4px 8px;">RU</button>
+                    <button type="button" class="lang-btn" data-lang="en" style="background: none; border: none; color: var(--tg-theme-text-color, #fff); cursor: pointer; padding: 4px 8px;">EN</button>
+                </div>
+                <button type="button" id="theme-toggle" style="display: block; width: 100%; text-align: left; background: none; border: none; color: var(--tg-theme-text-color, #fff); padding: 8px 12px; cursor: pointer; font-size: 14px;">
+                    🌓 Сменить тему
+                </button>
             </div>
-            <button type="button" class="admin-btn" id="admin-panel-btn" style="display:none;"
-                    data-i18n-title="admin.button_title" title="Админ-панель">
-                👑
-            </button>
+
             <div class="header-icon">🛡️</div>
             <h1 data-i18n="app.title">Кустос</h1>
             <p class="subtitle" data-i18n="app.subtitle">Защита групп от спама и рекламы</p>
