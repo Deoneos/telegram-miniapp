@@ -50,6 +50,7 @@ const TRANSLATIONS = {
     'groups.title': { ru: '📋 Мои группы', en: '📋 My groups' },
     'groups.loading': { ru: 'Загрузка...', en: 'Loading...' },
     'groups.no_title': { ru: 'Без названия', en: 'Untitled' },
+    'groups.add_to_group': { ru: 'Добавить в группу', en: 'Add to group' },
     'groups.empty_title': { ru: 'Нет групп', en: 'No groups' },
     'groups.empty_text': {
         ru: 'Добавьте бота в свою группу через кнопку выше',
@@ -206,6 +207,8 @@ const TRANSLATIONS = {
     'cat.other': { ru: '❓ Прочее', en: '❓ Other' },
         // Топ нарушителей
     'violators.title': { ru: '🏆 Топ нарушителей', en: '🏆 Top violators' },
+    'violators.empty_title': { ru: 'Все чисто! 🎉', en: 'All clean! 🎉' },
+    'violators.empty_text': { ru: 'В этой группе пока нет нарушителей. Отличная работа!', en: 'No violators in this group yet. Great job!' },
     'violators.no_data': { ru: 'Нарушителей нет', en: 'No violators' },
     'violators.error': { ru: 'Не удалось загрузить', en: 'Failed to load' },
     'violators.count': { ru: '{n} наруш.', en: '{n} viol.' },

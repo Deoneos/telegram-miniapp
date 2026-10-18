@@ -97,13 +97,11 @@ async function loadGroups() {
                 <div class="empty-icon">🔒</div>
                 <h3>${t('groups.locked_title')}</h3>
                 <p>${t('groups.locked_text')}</p>
-                <a href="https://deoneos.github.io/antispam-landing/"
-                   target="_blank"
-                   rel="noopener noreferrer"
-                   class="btn btn-secondary"
-                   style="display:inline-block; margin-top:16px; text-decoration:none;">
-                    ${t('groups.learn_more')}
-                </a>
+                <button onclick="tg.openTelegramLink('https://t.me/ANTI_SPAM_MWKbot?startgroup=true')"
+                            class="btn btn-primary"
+                            style="display:inline-block; margin-top:16px;">
+                        ➕ ${t('groups.add_to_group')}
+                    </button>
             </div>
         `;
         return;
@@ -129,13 +127,11 @@ async function loadGroups() {
                     <div class="empty-icon">📭</div>
                     <h3>${t('groups.empty_title')}</h3>
                     <p>${t('groups.empty_text')}</p>
-                    <a href="https://deoneos.github.io/antispam-landing/"
-                       target="_blank"
-                       rel="noopener noreferrer"
-                       class="btn btn-secondary"
-                       style="display:inline-block; margin-top:16px; text-decoration:none;">
-                        ${t('groups.learn_more')}
-                    </a>
+                    <button onclick="tg.openTelegramLink('https://t.me/ANTI_SPAM_MWKbot?startgroup=true')"
+                            class="btn btn-primary"
+                            style="display:inline-block; margin-top:16px;">
+                        ➕ ${t('groups.add_to_group')}
+                    </button>
                 </div>
             `;
             return;
@@ -792,7 +788,13 @@ async function loadTopViolators(chatId) {
         const items = data.violators || [];
 
         if (items.length === 0) {
-            container.innerHTML = `<p class="violators-empty">${t('violators.no_data')}</p>`;
+            container.innerHTML = `
+                <div class="empty-state" style="text-align: center; padding: 20px;">
+                    <div class="empty-icon" style="font-size: 40px; margin-bottom: 10px;">🎉</div>
+                    <h3 style="margin-bottom: 8px;">${t('violators.empty_title')}</h3>
+                    <p style="color: var(--tg-theme-hint-color, #999); font-size: 14px;">${t('violators.empty_text')}</p>
+                </div>
+            `;
             return;
         }
 
