@@ -232,6 +232,7 @@ function renderSettings(s) {
     const ghostEnabled = s.ghost_enabled == 1;
     const ghostTimeout = s.ghost_timeout_seconds || 60;
     const ghostAll = s.ghost_delete_all == 1;
+    const ghostTrigger = s.ghost_trigger || 0;
 
     container.innerHTML =
         items.map(it => `
@@ -259,10 +260,18 @@ function renderSettings(s) {
             </label>
         </div>
         <div class="ghost-settings-block ${ghostEnabled ? 'active' : ''}" id="ghost-settings-block">
+            <label class="ghost-label">${t('settings.ghost_trigger')}</label>
+            <select id="ghost-trigger-select" class="ghost-trigger-select" style="width: 100%; padding: 8px; margin-bottom: 12px; border-radius: 8px; background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2);">
+                <option value="0" ${ghostTrigger == 0 ? 'selected' : ''}>${t('settings.ghost_trigger_all')}</option>
+                <option value="1" ${ghostTrigger == 1 ? 'selected' : ''}>${t('settings.ghost_trigger_links')}</option>
+                <option value="2" ${ghostTrigger == 2 ? 'selected' : ''}>${t('settings.ghost_trigger_text')}</option>
+                <option value="3" ${ghostTrigger == 3 ? 'selected' : ''}>${t('settings.ghost_trigger_media')}</option>
+            </select>
+            
             <label class="ghost-label">${t('settings.ghost_timeout')}</label>
             <div class="ghost-timeout-row">
                 <input type="number" class="ghost-timeout-input" id="ghost-timeout-input"
-                       min="10" max="3600" step="10" value="${ghostTimeout}">
+                       min="10" max="86400" step="10" value="${ghostTimeout}">
                 <span class="ghost-timeout-unit">${t('settings.ghost_seconds')}</span>
             </div>
 

@@ -126,6 +126,11 @@ const TRANSLATIONS = {
             '• ⏱ Min 10 sec, max 1 hour\n\n' +
             '<b>Example:</b> timeout = 60 sec → message disappears after a minute.'
     },
+    'settings.ghost_trigger': { ru: 'Что удалять', en: 'What to delete' },
+    'settings.ghost_trigger_all': { ru: 'Все сообщения', en: 'All messages' },
+    'settings.ghost_trigger_links': { ru: 'Только ссылки', en: 'Only links' },
+    'settings.ghost_trigger_text': { ru: 'Только текст', en: 'Only text' },
+    'settings.ghost_trigger_media': { ru: 'Только медиа', en: 'Only media' },
     'settings.ghost_timeout': { ru: '⏱ Удалять через:', en: '⏱ Delete after:' },
     'settings.ghost_seconds': { ru: 'секунд', en: 'seconds' },
     'settings.ghost_delete_all': { ru: 'Что удалять:', en: 'What to delete:' },
