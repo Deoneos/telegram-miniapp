@@ -723,26 +723,7 @@ input:disabled + .slider {
 
 
 /* ===== КНОПКА АДМИН-ПАНЕЛИ ===== */
-.admin-btn {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
-    background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
-    border: none;
-    cursor: pointer;
-    font-size: 22px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 3px 12px rgba(243, 156, 18, 0.4);
-    transition: all 0.15s;
-    z-index: 10;
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
-}
+
 
 .admin-btn:active {
     transform: scale(0.92);
@@ -1406,14 +1387,4 @@ body.theme-dark .modal-content {
 /* Fix header layout */
 
 
-.theme-btn {
-    font-size: 20px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--tg-theme-text-color, #ffffff);
-}
+
