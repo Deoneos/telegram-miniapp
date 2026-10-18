@@ -1,2 +1,7 @@
 *.bak_*
 .bak_*
+
+*.bak.*
+*.db-wal
+*.db-shm
+api_data.db.empty_*
