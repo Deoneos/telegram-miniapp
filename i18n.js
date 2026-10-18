@@ -166,6 +166,9 @@ const TRANSLATIONS = {
     'custom_texts.label_perm_ban': { ru: '⛔ Постоянный бан', en: '⛔ Permanent ban' },
     'custom_texts.label_dm_text': { ru: '📩 ЛС предупреждение', en: '📩 DM warning' },
     'custom_texts.label_flood_muted': { ru: '🌊 Мут за флуд', en: '🌊 Flood mute' },
+    'custom_texts.label_flood_cumulative': { ru: '🌊 Мут за склейку', en: '🌊 Cumulative flood mute' },
+    'custom_texts.label_welcome': { ru: '👋 Приветствие', en: '👋 Welcome' },
+    'custom_texts.hint_welcome': { ru: 'Доступно: {name}, {chat_title}', en: 'Available: {name}, {chat_title}' },
     'custom_texts.label_flood_mass_spam': { ru: '📢 Массовая рассылка', en: '📢 Mass spam' },
 
     // Подсказки про плейсхолдеры
