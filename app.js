@@ -1077,8 +1077,10 @@ const CUSTOM_TEXT_FIELDS = [
       placeholder: '⚠️ <b>Предупреждение</b>\n\nВаше сообщение в группе <b>{chat_title}</b> было удалено.\n\n📋 Причина: {reason}' },
     { key: 'flood.muted', labelKey: 'custom_texts.label_flood_muted', hintKey: 'custom_texts.hint_flood',
       placeholder: '🌊 {user} замучен на {minutes} минут за флуд.' },
-    { key: 'flood.cumulative', labelKey: 'custom_texts.label_flood_cumulative', hintKey: 'custom_texts.hint_flood', maxLength: 500 },
-    { key: 'welcome', labelKey: 'custom_texts.label_welcome', hintKey: 'custom_texts.hint_welcome', maxLength: 500 },
+    { key: 'flood.cumulative', labelKey: 'custom_texts.label_flood_cumulative', hintKey: 'custom_texts.hint_flood',
+      placeholder: '🌊 {user}, не флуди короткими сообщениями. Мут на {minutes} мин.' },
+    { key: 'welcome', labelKey: 'custom_texts.label_welcome', hintKey: 'custom_texts.hint_welcome',
+      placeholder: '👋 Привет, {name}! Добро пожаловать в {chat_title}.\nПожалуйста, прочитай правила: /rules' },
     { key: 'flood.mass_spam', labelKey: 'custom_texts.label_flood_mass_spam', hintKey: 'custom_texts.hint_mass_spam',
       placeholder: '🚫 Пользователь @{username} заблокирован на {days} дней за массовую рассылку.' },
 ];
