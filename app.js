@@ -13,29 +13,36 @@ function initTheme() {
     
     applyTheme(theme);
     
-    const btn = document.getElementById('theme-toggle');
-    if (btn) {
-        btn.addEventListener('click', () => {
-            const currentTheme = document.body.classList.contains('theme-light') ? 'light' : 'dark';
-            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+    const checkbox = document.getElementById('theme-checkbox');
+    if (checkbox) {
+        // Чекбокс включен = светлая тема
+        checkbox.checked = (theme === 'light');
+        checkbox.addEventListener('change', () => {
+            const newTheme = checkbox.checked ? 'light' : 'dark';
             applyTheme(newTheme);
             localStorage.setItem('app_theme', newTheme);
         });
     }
+
+    // Добавляем активный класс для языка
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+        if (btn.dataset.lang === currentLang) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
 }
 
 function applyTheme(theme) {
-    const btn = document.getElementById('theme-toggle');
     if (theme === 'light') {
         document.body.classList.remove('theme-dark');
         document.body.classList.add('theme-light');
-        if (btn) btn.textContent = '🌞 Светлая тема';
         if (tg.setHeaderColor) tg.setHeaderColor('#ffffff');
         if (tg.setBackgroundColor) tg.setBackgroundColor('#ffffff');
     } else {
         document.body.classList.remove('theme-light');
         document.body.classList.add('theme-dark');
-        if (btn) btn.textContent = '🌙 Тёмная тема';
         if (tg.setHeaderColor) tg.setHeaderColor('#17212b');
         if (tg.setBackgroundColor) tg.setBackgroundColor('#17212b');
     }

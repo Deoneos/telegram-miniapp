@@ -14,7 +14,7 @@
         <header class="header" style="position: relative;">
             <!-- Админка в ЛЕВОМ верхнем углу -->
             <div style="position: absolute; top: 16px; left: 16px; z-index: 100;">
-                <button type="button" class="admin-btn" id="admin-panel-btn" style="display:none; background: none; border: none; font-size: 24px; cursor: pointer; padding: 4px; color: var(--tg-theme-text-color, #fff);" title="Админ-панель">👑</button>
+                <button type="button" class="admin-btn" id="admin-panel-btn" style="display:none;" title="Админ-панель">👑</button>
             </div>
 
             <!-- Бургер-меню в ПРАВОМ верхнем углу -->
@@ -22,15 +22,24 @@
                 <button type="button" class="menu-btn" id="menu-toggle" style="background: none; border: none; font-size: 24px; cursor: pointer; padding: 4px; color: var(--tg-theme-text-color, #fff);">⋮</button>
             </div>
 
-            <!-- Выпадающее меню (язык и тема) -->
-            <div id="dropdown-menu" style="display: none; position: absolute; top: 50px; right: 16px; background: var(--tg-theme-secondary-bg-color, #232e3c); border-radius: 12px; padding: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.3); z-index: 101; min-width: 150px;">
-                <div style="display: flex; justify-content: center; gap: 8px; margin-bottom: 8px; padding: 8px; border-bottom: 1px solid var(--tg-theme-hint-color, #444);">
-                    <button type="button" class="lang-btn" data-lang="ru" style="background: none; border: none; color: var(--tg-theme-text-color, #fff); cursor: pointer; padding: 4px 8px;">RU</button>
-                    <button type="button" class="lang-btn" data-lang="en" style="background: none; border: none; color: var(--tg-theme-text-color, #fff); cursor: pointer; padding: 4px 8px;">EN</button>
+            <!-- Выпадающее меню -->
+            <div id="dropdown-menu" style="display: none; position: absolute; top: 55px; right: 16px; background: var(--tg-theme-secondary-bg-color, #232e3c); border-radius: 14px; padding: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.4); z-index: 101; min-width: 160px; border: 1px solid var(--tg-theme-hint-color, #444);">
+                
+                <!-- Переключатель языка (Segmented Control) -->
+                <div class="lang-segmented">
+                    <button type="button" class="lang-btn" data-lang="ru">RU</button>
+                    <button type="button" class="lang-btn" data-lang="en">EN</button>
                 </div>
-                <button type="button" id="theme-toggle" style="display: block; width: 100%; text-align: left; background: none; border: none; color: var(--tg-theme-text-color, #fff); padding: 8px 12px; cursor: pointer; font-size: 14px;">
-                    🌓 Сменить тему
-                </button>
+
+                <!-- Переключатель темы (Toggle Switch) -->
+                <div class="theme-row">
+                    <span style="font-size: 16px;">☀️</span>
+                    <label class="switch">
+                        <input type="checkbox" id="theme-checkbox">
+                        <span class="slider"></span>
+                    </label>
+                    <span style="font-size: 16px;">🌙</span>
+                </div>
             </div>
 
             <div class="header-icon">🛡️</div>
