@@ -4,6 +4,42 @@ const API_BASE = 'https://telegram-bot-zakharsakharov.msk1.amvera.tech';
 // ===== ИНИЦИАЛИЗАЦИЯ =====
 const tg = window.Telegram.WebApp;
 tg.expand();
+
+// ===== ИНИЦИАЛИЗАЦИЯ ТЕМЫ =====
+function initTheme() {
+    const savedTheme = localStorage.getItem('app_theme');
+    const tgTheme = tg.colorScheme || 'light';
+    const theme = savedTheme || tgTheme;
+    
+    applyTheme(theme);
+    
+    const btn = document.getElementById('theme-toggle');
+    if (btn) {
+        btn.addEventListener('click', () => {
+            const currentTheme = document.body.classList.contains('theme-light') ? 'light' : 'dark';
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            applyTheme(newTheme);
+            localStorage.setItem('app_theme', newTheme);
+        });
+    }
+}
+
+function applyTheme(theme) {
+    const btn = document.getElementById('theme-toggle');
+    if (theme === 'light') {
+        document.body.classList.remove('theme-dark');
+        document.body.classList.add('theme-light');
+        if (btn) btn.textContent = '🌞';
+        if (tg.setHeaderColor) tg.setHeaderColor('#ffffff');
+        if (tg.setBackgroundColor) tg.setBackgroundColor('#ffffff');
+    } else {
+        document.body.classList.remove('theme-light');
+        document.body.classList.add('theme-dark');
+        if (btn) btn.textContent = '🌙';
+        if (tg.setHeaderColor) tg.setHeaderColor('#17212b');
+        if (tg.setBackgroundColor) tg.setBackgroundColor('#17212b');
+    }
+}
 tg.setHeaderColor('secondary_bg_color');
 tg.setBackgroundColor('bg_color');
 
@@ -638,6 +674,7 @@ window.loadTimelineChart = loadTimelineChart;
 // ===== ЗАПУСК =====
 loadGroups();
 tg.ready();
+initTheme();
 
 // ===== ПИРОГ КАТЕГОРИЙ =====
 let categoriesChart = null;

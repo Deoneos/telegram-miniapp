@@ -1367,3 +1367,49 @@ input:disabled + .slider {
     font-weight: 600;
     cursor: pointer;
 }
+
+/* ===== ПЕРЕКЛЮЧЕНИЕ ТЕМ ===== */
+body.theme-light {
+    --tg-theme-bg-color: #ffffff !important;
+    --tg-theme-text-color: #000000 !important;
+    --tg-theme-hint-color: #999999 !important;
+    --tg-theme-link-color: #2678b6 !important;
+    --tg-theme-button-color: #2678b6 !important;
+    --tg-theme-button-text-color: #ffffff !important;
+    --tg-theme-secondary-bg-color: #f4f4f5 !important;
+    background-color: #ffffff !important;
+    color: #000000 !important;
+}
+
+body.theme-dark {
+    --tg-theme-bg-color: #17212b !important;
+    --tg-theme-text-color: #ffffff !important;
+    --tg-theme-hint-color: #7d8b99 !important;
+    --tg-theme-link-color: #6ab2f2 !important;
+    --tg-theme-button-color: #5288c1 !important;
+    --tg-theme-button-text-color: #ffffff !important;
+    --tg-theme-secondary-bg-color: #232e3c !important;
+    background-color: #17212b !important;
+    color: #ffffff !important;
+}
+
+/* Принудительно перекрашиваем элементы, если они были заданы жестко */
+body.theme-light * {
+    border-color: #e1e3e6 !important;
+}
+body.theme-light .setting-item, 
+body.theme-light .card, 
+body.theme-light .modal-content {
+    background: #ffffff !important;
+    color: #000000 !important;
+}
+
+body.theme-dark * {
+    border-color: #2f3b4b !important;
+}
+body.theme-dark .setting-item, 
+body.theme-dark .card, 
+body.theme-dark .modal-content {
+    background: #232e3c !important;
+    color: #ffffff !important;
+}
