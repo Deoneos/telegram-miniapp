@@ -231,6 +231,9 @@ function renderSettings(s) {
 
     const ghostEnabled = s.ghost_enabled == 1;
     const ghostTimeout = s.ghost_timeout_seconds || 60;
+    const timeoutH = Math.floor(ghostTimeout / 3600);
+    const timeoutM = Math.floor((ghostTimeout % 3600) / 60);
+    const timeoutS = ghostTimeout % 60;
     const ghostAll = s.ghost_delete_all == 1;
     const ghostTrigger = s.ghost_trigger || 0;
 
@@ -280,10 +283,19 @@ function renderSettings(s) {
             </label>
             
             <label class="ghost-label">${t('settings.ghost_timeout')}</label>
-            <div class="ghost-timeout-row">
-                <input type="number" class="ghost-timeout-input" id="ghost-timeout-input"
-                       min="10" max="86400" step="10" value="${ghostTimeout}">
-                <span class="ghost-timeout-unit">${t('settings.ghost_seconds')}</span>
+            <div class="ghost-timeout-row" style="display: flex; gap: 8px; align-items: center; justify-content: flex-start;">
+                <div style="display: flex; align-items: center; gap: 4px;">
+                    <input type="number" class="ghost-timeout-input" id="ghost-timeout-hours" min="0" max="24" value="${timeoutH}" style="width: 60px; text-align: center; padding: 8px;">
+                    <span class="ghost-timeout-unit">${t('settings.ghost_hours')}</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 4px;">
+                    <input type="number" class="ghost-timeout-input" id="ghost-timeout-mins" min="0" max="59" value="${timeoutM}" style="width: 60px; text-align: center; padding: 8px;">
+                    <span class="ghost-timeout-unit">${t('settings.ghost_mins')}</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 4px;">
+                    <input type="number" class="ghost-timeout-input" id="ghost-timeout-secs" min="0" max="59" value="${timeoutS}" style="width: 60px; text-align: center; padding: 8px;">
+                    <span class="ghost-timeout-unit">${t('settings.ghost_seconds')}</span>
+                </div>
             </div>
 
             <label class="ghost-label">${t('settings.ghost_delete_all')}</label>
@@ -342,10 +354,12 @@ async function saveGhostSettings() {
     const chatId = currentChartChatId;
     if (!chatId || !user || !user.id) return;
 
-    const timeoutInput = document.getElementById('ghost-timeout-input');
+    const h = parseInt(document.getElementById('ghost-timeout-hours')?.value) || 0;
+    const m = parseInt(document.getElementById('ghost-timeout-mins')?.value) || 0;
+    const s = parseInt(document.getElementById('ghost-timeout-secs')?.value) || 0;
     const radioAll = document.querySelector('input[name="ghost-delete-mode"][value="1"]');
 
-    let timeout = parseInt(timeoutInput?.value) || 60;
+    let timeout = (h * 3600) + (m * 60) + s;
     if (timeout < 10) timeout = 10;
     if (timeout > 86400) timeout = 86400;
 

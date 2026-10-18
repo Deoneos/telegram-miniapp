@@ -132,6 +132,8 @@ const TRANSLATIONS = {
     'settings.ghost_trigger_text': { ru: 'Только текст', en: 'Only text' },
     'settings.ghost_trigger_media': { ru: 'Только медиа', en: 'Only media' },
     'settings.ghost_timeout': { ru: '⏱ Удалять через:', en: '⏱ Delete after:' },
+    'settings.ghost_hours': { ru: 'ч', en: 'h' },
+    'settings.ghost_mins': { ru: 'мин', en: 'm' },
     'settings.ghost_seconds': { ru: 'секунд', en: 'seconds' },
     'settings.ghost_delete_all': { ru: 'Что удалять:', en: 'What to delete:' },
     'settings.ghost_all': { ru: 'Все сообщения', en: 'All messages' },
