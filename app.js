@@ -301,6 +301,32 @@ function renderSettings(s) {
                 <span class="slider"></span>
             </label>
         </div>
+        <!-- Расписание модерации -->
+        <div class="schedule-settings-block" id="schedule-settings-block" style="margin-top: 16px; padding: 16px; background: var(--tg-theme-secondary-bg-color, #232e3c); border-radius: 12px;">
+            <div class="setting-name" style="margin-bottom: 8px;">${t('settings.schedule_title')}</div>
+            <div class="setting-desc" style="margin-bottom: 12px; font-size: 13px; color: var(--tg-theme-hint-color, #999);">${t('settings.schedule_desc')}</div>
+            
+            <div style="display: flex; gap: 12px; margin-bottom: 12px;">
+                <div style="flex: 1;">
+                    <label style="font-size: 12px; color: var(--tg-theme-hint-color, #999); display: block; margin-bottom: 4px;">${t('settings.schedule_start')}</label>
+                    <input type="time" id="mod-start-time" value="${s.moderation_start_time || '00:00'}" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid var(--tg-theme-hint-color, #444); background: var(--tg-theme-bg-color, #17212b); color: var(--tg-theme-text-color, #fff);">
+                </div>
+                <div style="flex: 1;">
+                    <label style="font-size: 12px; color: var(--tg-theme-hint-color, #999); display: block; margin-bottom: 4px;">${t('settings.schedule_end')}</label>
+                    <input type="time" id="mod-end-time" value="${s.moderation_end_time || '23:59'}" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid var(--tg-theme-hint-color, #444); background: var(--tg-theme-bg-color, #17212b); color: var(--tg-theme-text-color, #fff);">
+                </div>
+            </div>
+            
+            <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; font-size: 14px; cursor: pointer;">
+                <input type="checkbox" id="mod-weekends" ${s.moderation_weekends == 1 ? 'checked' : ''}>
+                ${t('settings.schedule_weekends')}
+            </label>
+            
+            <button type="button" class="btn btn-secondary" id="save-schedule-btn" style="width: 100%; padding: 10px; font-size: 14px;">
+                💾 ${t('settings.schedule_save')}
+            </button>
+        </div>
+        
         <div class="ghost-settings-block ${ghostEnabled ? 'active' : ''}" id="ghost-settings-block">
             <label class="ghost-label">${t('settings.ghost_trigger')}</label>
             
@@ -385,6 +411,12 @@ function renderSettings(s) {
     const saveBtn = document.getElementById('ghost-save-btn');
     if (saveBtn) {
         saveBtn.addEventListener('click', saveGhostSettings);
+    }
+
+    // Обработчик сохранения расписания
+    const saveScheduleBtn = document.getElementById('save-schedule-btn');
+    if (saveScheduleBtn) {
+        saveScheduleBtn.addEventListener('click', saveScheduleSettings);
     }
 }
 
@@ -1340,3 +1372,50 @@ document.addEventListener('DOMContentLoaded', () => {
 
 window.openCustomTextsModal = openCustomTextsModal;
 window.closeCustomTextsModal = closeCustomTextsModal;
+
+async function saveScheduleSettings() {
+    const chatId = currentChartChatId;
+    if (!chatId || !user || !user.id) return;
+
+    const startVal = document.getElementById('mod-start-time')?.value || '00:00';
+    const endVal = document.getElementById('mod-end-time')?.value || '23:59';
+    const weekendsVal = document.getElementById('mod-weekends')?.checked ? 1 : 0;
+
+    const btn = document.getElementById('save-schedule-btn');
+    if (btn) {
+        btn.disabled = true;
+        btn.textContent = t('settings.applying');
+    }
+
+    try {
+        const keys = {
+            'moderation_start_time': startVal,
+            'moderation_end_time': endVal,
+            'moderation_weekends': weekendsVal
+        };
+
+        for (const [key, value] of Object.entries(keys)) {
+            const resp = await fetch(`${API_BASE}/api/chat/${chatId}/settings`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_id: user.id, key: key, value: value })
+            });
+            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        }
+
+        const msg = document.createElement('div');
+        msg.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#2ecc71;color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,0.3);';
+        msg.textContent = t('settings.schedule_saved');
+        document.body.appendChild(msg);
+        setTimeout(() => msg.remove(), 2500);
+
+    } catch (e) {
+        console.error('saveScheduleSettings error:', e);
+        alert(t('settings.error') + ': ' + e.message);
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.textContent = '💾 ' + t('settings.schedule_save');
+        }
+    }
+}

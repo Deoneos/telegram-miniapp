@@ -98,6 +98,13 @@ const TRANSLATIONS = {
     'settings.no_access': { ru: 'Откройте через Telegram', en: 'Open via Telegram' },
 
     // ===== Ghost mode =====
+    'settings.schedule_title': { ru: '⏰ Расписание модерации', en: '⏰ Moderation Schedule' },
+    'settings.schedule_desc': { ru: 'Бот будет работать только в указанное время', en: 'Bot will work only during the specified time' },
+    'settings.schedule_start': { ru: 'Начало', en: 'Start' },
+    'settings.schedule_end': { ru: 'Конец', en: 'End' },
+    'settings.schedule_weekends': { ru: 'Работать по выходным', en: 'Work on weekends' },
+    'settings.schedule_save': { ru: 'Сохранить расписание', en: 'Save schedule' },
+    'settings.schedule_saved': { ru: 'Расписание сохранено', en: 'Schedule saved' },
     'settings.ghost': { ru: '👻 Призрачный режим', en: '👻 Ghost mode' },
     'settings.ghost_desc': { ru: 'Автоудаление сообщений', en: 'Auto-delete messages' },
     'settings.ghost_help_title': { ru: '👻 Что такое призрачный режим?', en: '👻 What is ghost mode?' },
