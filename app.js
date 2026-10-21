@@ -406,11 +406,17 @@ function renderSettings(s) {
             const chatId = currentChartChatId;
             if (!chatId || !user || !user.id) return;
 
-            // Бессрочно (или сброс)
             let pausedUntil = null;
             if (pauseCb.checked) {
                 pausedUntil = "2099-12-31T23:59:59+03:00";
             }
+
+            // Показываем тост сразу (оптимистично)
+            const msg = document.createElement('div');
+            msg.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#2ecc71;color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,0.3);';
+            msg.textContent = pauseCb.checked ? t('settings.pause_toast_on') : t('settings.pause_toast_off');
+            document.body.appendChild(msg);
+            setTimeout(() => msg.remove(), 2500);
 
             try {
                 const resp = await fetch(`${API_BASE}/api/chat/${chatId}/settings`, {
@@ -418,21 +424,16 @@ function renderSettings(s) {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ user_id: user.id, key: 'paused_until', value: pausedUntil })
                 });
-                if (!resp.ok) throw new Error('HTTP ' + resp.status);
-
-                // Тост
-                const msg = document.createElement('div');
-                msg.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#2ecc71;color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,0.3);';
-                msg.textContent = pauseCb.checked ? t('settings.pause_toast_on') : t('settings.pause_toast_off');
-                document.body.appendChild(msg);
-                setTimeout(() => msg.remove(), 2500);
-
-                // Перерисовываем через 1 секунду, чтобы обновить статус-бар
-                setTimeout(() => loadChatSettings(chatId), 1000);
+                
+                if (!resp.ok) {
+                    throw new Error('HTTP ' + resp.status);
+                }
+                // Никаких перезагрузок! UI уже обновился.
             } catch (e) {
                 console.error('pause error:', e);
-                alert(t('settings.error') + ': ' + e.message);
-                pauseCb.checked = !pauseCb.checked; // откатываем
+                // Если ошибка — возвращаем тумблер назад и показываем алерт
+                pauseCb.checked = !pauseCb.checked;
+                alert('⚠️ Ошибка сети. Попробуйте еще раз.');
             }
         });
     }
