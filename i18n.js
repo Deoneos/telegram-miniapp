@@ -90,6 +90,8 @@ const TRANSLATIONS = {
     'settings.moderation_desc': { ru: 'Удалять спам, рекламу, 18+', en: 'Remove spam, ads, 18+' },
     'settings.antiflood': { ru: '🌊 Антифлуд', en: '🌊 Antiflood' },
     'settings.antiflood_desc': { ru: 'Мут за флуд', en: 'Mute for flooding' },
+    'settings.captcha': { ru: '🛡 Капча для новичков', en: '🛡 Captcha for new members' },
+    'settings.captcha_desc': { ru: 'Проверка «Я не робот» при входе в группу', en: '«I am not a bot» check when joining' },
     'settings.ocr': { ru: '📸 OCR фото/видео', en: '📸 OCR photo/video' },
     'settings.ocr_desc': { ru: 'Читать текст с картинок', en: 'Read text from images' },
     'settings.hint': { ru: 'Изменения применяются в течение 30 секунд', en: 'Changes apply within 30 seconds' },

@@ -266,6 +266,7 @@ function renderSettings(s) {
         { key: 'moderation_enabled', label: t('settings.moderation'), desc: t('settings.moderation_desc') },
         { key: 'antiflood_enabled',  label: t('settings.antiflood'),  desc: t('settings.antiflood_desc') },
         { key: 'ocr_enabled',        label: t('settings.ocr'),        desc: t('settings.ocr_desc') },
+        { key: 'captcha_enabled',    label: t('settings.captcha'),    desc: t('settings.captcha_desc') },
     ];
 
     const ghostEnabled = s.ghost_enabled == 1;
