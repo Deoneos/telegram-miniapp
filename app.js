@@ -275,6 +275,7 @@ function renderSettings(s) {
     const timeoutS = ghostTimeout % 60;
     const ghostAll = s.ghost_delete_all == 1;
     const ghostTrigger = s.ghost_trigger || 0;
+    const isPaused = s.paused_until && new Date(s.paused_until) > new Date();
 
     container.innerHTML =
         items.map(it => `
@@ -301,6 +302,18 @@ function renderSettings(s) {
                 <span class="slider"></span>
             </label>
         </div>
+        <!-- Пауза -->
+        <div class="setting-row" style="margin-top: 16px; padding: 12px; background: var(--tg-theme-secondary-bg-color, #232e3c); border-radius: 12px; border: 1px solid ${isPaused ? 'var(--tg-theme-button-color, #5288c1)' : 'transparent'};">
+            <div class="setting-info">
+                <div class="setting-name">${t('settings.pause')}</div>
+                <div class="setting-desc">${isPaused ? t('settings.pause_on') + ' ' + new Date(s.paused_until).toLocaleTimeString('ru-RU', {hour: '2-digit', minute: '2-digit'}) : t('settings.pause_desc')}</div>
+            </div>
+            <label class="switch">
+                <input type="checkbox" data-key="paused_until" ${isPaused ? 'checked' : ''}>
+                <span class="slider"></span>
+            </label>
+        </div>
+
         <!-- Расписание модерации -->
         <div class="schedule-settings-block" id="schedule-settings-block" style="margin-top: 16px; padding: 16px; background: var(--tg-theme-secondary-bg-color, #232e3c); border-radius: 12px;">
             <div class="setting-name" style="margin-bottom: 8px;">${t('settings.schedule_title')}</div>
@@ -385,6 +398,46 @@ function renderSettings(s) {
             cb.addEventListener('change', () => toggleSetting(cb));
         }
     });
+
+    // Пауза
+    const pauseCb = container.querySelector('input[data-key="paused_until"]');
+    if (pauseCb) {
+        pauseCb.addEventListener('change', async () => {
+            const chatId = currentChartChatId;
+            if (!chatId || !user || !user.id) return;
+
+            // 1 час паузы (или сброс)
+            let pausedUntil = null;
+            if (pauseCb.checked) {
+                const d = new Date();
+                d.setHours(d.getHours() + 1);
+                pausedUntil = d.toISOString();
+            }
+
+            try {
+                const resp = await fetch(`${API_BASE}/api/chat/${chatId}/settings`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: user.id, key: 'paused_until', value: pausedUntil })
+                });
+                if (!resp.ok) throw new Error('HTTP ' + resp.status);
+
+                // Тост
+                const msg = document.createElement('div');
+                msg.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#2ecc71;color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,0.3);';
+                msg.textContent = pauseCb.checked ? t('settings.pause_toast_on') : t('settings.pause_toast_off');
+                document.body.appendChild(msg);
+                setTimeout(() => msg.remove(), 2500);
+
+                // Перерисовываем через 1 секунду, чтобы обновить статус-бар
+                setTimeout(() => loadChatSettings(chatId), 1000);
+            } catch (e) {
+                console.error('pause error:', e);
+                alert(t('settings.error') + ': ' + e.message);
+                pauseCb.checked = !pauseCb.checked; // откатываем
+            }
+        });
+    }
 
     // Ghost toggle
     const ghostCb = container.querySelector('input[data-key="ghost_enabled"]');
