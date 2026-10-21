@@ -302,11 +302,11 @@ function renderSettings(s) {
                 <span class="slider"></span>
             </label>
         </div>
-        <!-- Пауза -->
+        <!-- Выключить бота -->
         <div class="setting-row" style="margin-top: 16px; padding: 12px; background: var(--tg-theme-secondary-bg-color, #232e3c); border-radius: 12px; border: 1px solid ${isPaused ? 'var(--tg-theme-button-color, #5288c1)' : 'transparent'};">
             <div class="setting-info">
                 <div class="setting-name">${t('settings.pause')}</div>
-                <div class="setting-desc">${isPaused ? t('settings.pause_on') + ' ' + new Date(s.paused_until).toLocaleTimeString('ru-RU', {hour: '2-digit', minute: '2-digit'}) : t('settings.pause_desc')}</div>
+                <div class="setting-desc">${isPaused ? t('settings.pause_on') : t('settings.pause_desc')}</div>
             </div>
             <label class="switch">
                 <input type="checkbox" data-key="paused_until" ${isPaused ? 'checked' : ''}>
@@ -406,12 +406,10 @@ function renderSettings(s) {
             const chatId = currentChartChatId;
             if (!chatId || !user || !user.id) return;
 
-            // 1 час паузы (или сброс)
+            // Бессрочно (или сброс)
             let pausedUntil = null;
             if (pauseCb.checked) {
-                const d = new Date();
-                d.setHours(d.getHours() + 1);
-                pausedUntil = d.toISOString();
+                pausedUntil = "2099-12-31T23:59:59+03:00";
             }
 
             try {
