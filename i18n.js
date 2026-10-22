@@ -14,7 +14,7 @@ const TRANSLATIONS = {
     'admin.tab_bans': { ru: '🚫 Баны', en: '🚫 Bans' },
     'admin.tab_violators': { ru: '🔨 Наруш.', en: '🔨 Viol.' },
     'admin.tab_deleted': { ru: '🗑 Удал.', en: '🗑 Del.' },
-    'admin.tab_roles': { ru: '👑 Роли', en: '👑 Roles' },
+    'admin.tab_roles': { ru: '👑 Роли', en: '👑 Roles' }, 'admin.tab_federations': { ru: '🌐 Фед.', en: '🌐 Fed.' },
     'admin.no_data': { ru: 'Нет данных', en: 'No data' },
     'admin.error': { ru: 'Ошибка загрузки', en: 'Load error' },
     'admin.actions': { ru: 'Действия', en: 'Actions' },
