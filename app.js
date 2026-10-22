@@ -3,6 +3,15 @@ const API_BASE = 'https://telegram-bot-zakharsakharov.msk1.amvera.tech';
 
 // ===== ИНИЦИАЛИЗАЦИЯ =====
 const tg = window.Telegram.WebApp;
+
+function openAddToGroup() {
+    const url = 'https://t.me/ANTI_SPAM_MWKbot?startgroup=true';
+    if (tg && tg.openTelegramLink) {
+        tg.openTelegramLink(url);
+    } else {
+        window.open(url, '_blank');
+    }
+}
 tg.expand();
 
 // ===== ИНИЦИАЛИЗАЦИЯ ТЕМЫ =====
@@ -90,7 +99,7 @@ document.querySelectorAll('.lang-btn').forEach(btn => {
 
 // Кнопка "Добавить в группу"
 document.getElementById('add-to-group-btn').addEventListener('click', () => {
-    tg.openTelegramLink('https://t.me/ANTI_SPAM_MWKbot?startgroup=true');
+    openAddToGroup();
 });
 
 // ===== ЗАГРУЗКА ГРУПП =====
@@ -104,7 +113,7 @@ async function loadGroups() {
                 <div class="empty-icon">🔒</div>
                 <h3>${t('groups.locked_title')}</h3>
                 <p>${t('groups.locked_text')}</p>
-                <button onclick="tg.openTelegramLink('https://t.me/ANTI_SPAM_MWKbot?startgroup=true')"
+                <button onclick="openAddToGroup()"
                             class="btn btn-primary"
                             style="display:inline-block; margin-top:16px;">
                         ➕ ${t('groups.add_to_group')}
@@ -134,7 +143,7 @@ async function loadGroups() {
                     <div class="empty-icon">📭</div>
                     <h3>${t('groups.empty_title')}</h3>
                     <p>${t('groups.empty_text')}</p>
-                    <button onclick="tg.openTelegramLink('https://t.me/ANTI_SPAM_MWKbot?startgroup=true')"
+                    <button onclick="openAddToGroup()"
                             class="btn btn-primary"
                             style="display:inline-block; margin-top:16px;">
                         ➕ ${t('groups.add_to_group')}
