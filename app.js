@@ -1538,6 +1538,34 @@ async function renderFederationsAdmin(container) {
     }
 }
 
+
+async function deleteFederation(fedId, fedName) {
+    if (!confirm(`Вы уверены, что хотите удалить федерацию «${fedName}»?\n\nЭто действие удалит её из бота и API, а также все связанные баны.`)) {
+        return;
+    }
+    
+    try {
+        const resp = await fetch(`${API_BASE}/api/admin/federation/delete`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: user.id, federation_id: fedId })
+        });
+        
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const data = await resp.json();
+        
+        if (data.ok) {
+            alert('✅ Федерация удалена');
+            renderFederationsAdmin(document.getElementById('admin-content'));
+        } else {
+            alert('❌ Ошибка: ' + (data.detail || 'Неизвестно'));
+        }
+    } catch (e) {
+        console.error(e);
+        alert('❌ Ошибка сети: ' + e.message);
+    }
+}
+
 async function renderFederationDetails(fedId) {
     const container = document.getElementById('admin-content');
     container.innerHTML = `<p class="admin-loading">Загрузка деталей...</p>`;
@@ -1553,7 +1581,10 @@ async function renderFederationDetails(fedId) {
         let html = `
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                 <h3>🌐 ${fed.name}</h3>
-                <button onclick="renderFederationsAdmin(document.getElementById('admin-content'))" style="background: none; border: none; font-size: 20px; cursor: pointer;">🔙</button>
+                <div>
+                    <button onclick="deleteFederation(${fedId}, '${fed.name.replace(/'/g, "\\'")}')" style="background: none; border: none; font-size: 18px; cursor: pointer; margin-right: 8px;" title="Удалить федерацию">🗑</button>
+                    <button onclick="renderFederationsAdmin(document.getElementById('admin-content'))" style="background: none; border: none; font-size: 20px; cursor: pointer;">🔙</button>
+                </div>
             </div>
         `;
         
