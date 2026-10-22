@@ -1043,6 +1043,7 @@ async function loadAdminTab(tab) {
         else if (tab === 'violators') await loadAdminViolators();
         else if (tab === 'deleted') await loadAdminDeleted();
         else if (tab === 'roles') await loadAdminRoles();
+        else if (tab === 'federations') await renderFederationsAdmin(content);
     } catch (e) {
         console.error('loadAdminTab error:', e);
         content.innerHTML = `<p class="admin-empty">${t('admin.error')}</p>`;
@@ -1479,5 +1480,152 @@ async function saveScheduleSettings() {
             btn.disabled = false;
             btn.textContent = '💾 ' + t('settings.schedule_save');
         }
+    }
+}
+
+
+// ========== ФЕДЕРАЦИИ (АДМИН-ПАНЕЛЬ) ==========
+
+async function renderFederationsAdmin(container) {
+    container.innerHTML = `<p class="admin-loading">Загрузка федераций...</p>`;
+    
+    try {
+        const resp = await fetch(`${API_BASE}/api/admin/federations?user_id=${user.id}`);
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const data = await resp.json();
+        
+        if (!data.ok || !data.federations) {
+            container.innerHTML = `<p class="admin-error">Ошибка загрузки</p>`;
+            return;
+        }
+        
+        if (data.federations.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">🌐</div>
+                    <h3>Федераций пока нет</h3>
+                    <p>Создайте федерацию в боте командой /fcreate</p>
+                </div>
+            `;
+            return;
+        }
+        
+        let html = '';
+        for (const fed of data.federations) {
+            html += `
+                <div class="admin-card" style="margin-bottom: 12px; padding: 12px; background: var(--tg-theme-secondary-bg-color); border-radius: 12px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-weight: 600; font-size: 15px;">🌐 ${fed.name}</div>
+                            <div style="font-size: 12px; color: var(--tg-theme-hint-color);">ID: ${fed.id} · Владелец: ${fed.owner_id}</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 12px;">👥 ${fed.chats_approved} / ⏳ ${fed.chats_pending}</div>
+                            <div style="font-size: 12px;">🚫 ${fed.bans_count} банов</div>
+                        </div>
+                    </div>
+                    <button onclick="renderFederationDetails(${fed.id})" style="margin-top: 10px; width: 100%; padding: 8px; background: var(--tg-theme-button-color); color: var(--tg-theme-button-text-color); border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                        Управление
+                    </button>
+                </div>
+            `;
+        }
+        
+        container.innerHTML = html;
+    } catch (e) {
+        console.error(e);
+        container.innerHTML = `<p class="admin-error">Ошибка: ${e.message}</p>`;
+    }
+}
+
+async function renderFederationDetails(fedId) {
+    const container = document.getElementById('admin-content');
+    container.innerHTML = `<p class="admin-loading">Загрузка деталей...</p>`;
+    
+    try {
+        const resp = await fetch(`${API_BASE}/api/admin/federations/${fedId}?user_id=${user.id}`);
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const data = await resp.json();
+        
+        if (!data.ok) throw new Error('Ошибка API');
+        
+        const fed = data.federation;
+        let html = `
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h3>🌐 ${fed.name}</h3>
+                <button onclick="renderFederationsAdmin(document.getElementById('admin-content'))" style="background: none; border: none; font-size: 20px; cursor: pointer;">🔙</button>
+            </div>
+        `;
+        
+        // Группы
+        html += `<h4 style="margin-top: 16px;">👥 Группы (${data.chats.length})</h4>`;
+        if (data.chats.length === 0) {
+            html += `<p>Нет групп</p>`;
+        } else {
+            for (const chat of data.chats) {
+                const title = chat.title || `ID: ${chat.chat_id}`;
+                const isApproved = chat.status === 'approved';
+                html += `
+                    <div style="padding: 8px; border-bottom: 1px solid var(--tg-theme-hint-color); display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-weight: 600;">${title}</div>
+                            <div style="font-size: 12px; color: ${isApproved ? '#2ecc71' : '#f39c12'};">
+                                ${isApproved ? '✅ Одобрена' : '⏳ Ожидает'}
+                            </div>
+                        </div>
+                        <div>
+                            ${!isApproved ? `
+                                <button onclick="fedAction(${fedId}, ${chat.chat_id}, 'approve')" style="background: #2ecc71; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer;">✅</button>
+                                <button onclick="fedAction(${fedId}, ${chat.chat_id}, 'reject')" style="background: #e74c3c; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer;">❌</button>
+                            ` : `
+                                <button onclick="fedAction(${fedId}, ${chat.chat_id}, 'remove')" style="background: #e74c3c; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer;">🗑</button>
+                            `}
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        
+        // Баны
+        html += `<h4 style="margin-top: 24px;">🚫 Последние баны (${data.bans.length})</h4>`;
+        if (data.bans.length === 0) {
+            html += `<p>Нет банов</p>`;
+        } else {
+            for (const ban of data.bans) {
+                html += `
+                    <div style="padding: 8px; border-bottom: 1px solid var(--tg-theme-hint-color);">
+                        <div style="font-weight: 600;">ID: ${ban.user_id} ${ban.username ? '@' + ban.username : ''}</div>
+                        <div style="font-size: 12px; color: var(--tg-theme-hint-color);">${ban.reason}</div>
+                        <div style="font-size: 11px; color: var(--tg-theme-hint-color);">${ban.banned_at.slice(0, 16)}</div>
+                    </div>
+                `;
+            }
+        }
+        
+        container.innerHTML = html;
+    } catch (e) {
+        console.error(e);
+        container.innerHTML = `<p class="admin-error">Ошибка: ${e.message}</p>`;
+    }
+}
+
+async function fedAction(fedId, chatId, action) {
+    if (!confirm(`Вы уверены, что хотите ${action === 'approve' ? 'одобрить' : action === 'reject' ? 'отклонить' : 'удалить'} группу?`)) return;
+    
+    try {
+        const resp = await fetch(`${API_BASE}/api/admin/federations/action`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: user.id, federation_id: fedId, chat_id: chatId, action: action })
+        });
+        
+        if (resp.ok) {
+            alert('✅ Успешно');
+            renderFederationDetails(fedId);
+        } else {
+            alert('❌ Ошибка');
+        }
+    } catch (e) {
+        alert('❌ Ошибка сети');
     }
 }
