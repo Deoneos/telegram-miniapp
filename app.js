@@ -298,6 +298,11 @@ function renderSettings(s) {
                     <input type="checkbox" data-key="${it.key}" ${s[it.key] ? 'checked' : ''}>
                     <span class="slider"></span>
                 </label>
+                <label class="switch">
+                    <input type="checkbox" data-key="ml_enabled" ${settings.ml_enabled ? 'checked' : ''}>
+                    <span>${t('settings.ml_enabled')}</span>
+                </label>
+                <div style="font-size: 0.8em; color: #888; margin-top: -10px; margin-bottom: 15px; padding-left: 45px;">${t('settings.ml_desc')}</div>
             </div>
         `).join('')
         + `

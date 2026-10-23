@@ -1,5 +1,8 @@
 // ===== MINI APP i18n =====
 const TRANSLATIONS = {
+    'settings.ml_enabled': { ru: '🤖 ML-фильтр (эксперимент)', en: '🤖 ML filter (experimental)' },
+    'settings.ml_desc': { ru: 'Нейросеть для отлова скрытого спама (может ошибаться)', en: 'Neural network for hidden spam detection (may make mistakes)' },
+
     'app.title': { ru: 'ANTI_SPAM Bot', en: 'ANTI_SPAM Bot' },
     'app.subtitle': { ru: 'Защита групп от спама и рекламы', en: 'Protection from spam and ads' },
 
