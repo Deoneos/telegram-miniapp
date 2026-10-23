@@ -298,14 +298,21 @@ function renderSettings(s) {
                     <input type="checkbox" data-key="${it.key}" ${s[it.key] ? 'checked' : ''}>
                     <span class="slider"></span>
                 </label>
-                <label class="switch">
-                    <input type="checkbox" data-key="ml_enabled" ${settings.ml_enabled ? 'checked' : ''}>
-                    <span>${t('settings.ml_enabled')}</span>
-                </label>
-                <div style="font-size: 0.8em; color: #888; margin-top: -10px; margin-bottom: 15px; padding-left: 45px;">${t('settings.ml_desc')}</div>
+                
             </div>
         `).join('')
         + `
+            <div class="setting-row" style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
+                <div class="setting-info">
+                    <div class="setting-label">🤖 ML-фильтр (эксперимент)</div>
+                    <div class="setting-desc">Нейросеть для отлова скрытого спама (может ошибаться)</div>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" data-key="ml_enabled" ${s.ml_enabled ? 'checked' : ''}>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
         <div class="setting-row">
             <div class="setting-info">
                 <div class="setting-name">${t('settings.ghost')}</div>
