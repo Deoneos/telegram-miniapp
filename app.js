@@ -1679,18 +1679,12 @@ async function renderFederationDetails(fedId) {
 
 async function fedAction(fedId, chatId, action) {
     if (action === 'remove') {
-        if (!confirm('Вы уверены, что хотите исключить группу из федерации?
-
-Она больше не будет получать федеративные баны.')) {
-            return;
-        }
+        if (!confirm('Вы уверены, что хотите исключить группу из федерации?\n\nОна больше не будет получать федеративные баны.')) return;
     } else {
-        if (!confirm(`Вы уверены, что хотите ${action === 'approve' ? 'одобрить' : action === 'reject' ? 'отклонить' : 'удалить'} группу?`)) {
-            return;
-        }
+        if (!confirm(`Вы уверены, что хотите ${action === 'approve' ? 'одобрить' : action === 'reject' ? 'отклонить' : 'удалить'} группу?`)) return;
     }
 
-    try {
+        try {
         const resp = await fetch(`${API_BASE}/api/admin/federations/action`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
