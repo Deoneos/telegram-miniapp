@@ -1551,6 +1551,30 @@ async function renderFederationsAdmin(container) {
 }
 
 
+async function renameFederation(fedId, currentName) {
+    const newName = prompt(`Введите новое название для федерации «${currentName}»:`, currentName);
+    if (!newName || newName.trim() === '' || newName.trim() === currentName) return;
+
+    try {
+        const resp = await fetch(`${API_BASE}/api/admin/federation/rename`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: user.id, federation_id: fedId, name: newName.trim() })
+        });
+        const data = await resp.json();
+        if (!resp.ok) throw new Error(data.detail || 'Ошибка сервера');
+        
+        alert(`✅ Федерация переименована в «${newName.trim()}»`);
+        if (typeof renderFederationsAdmin === 'function') {
+            renderFederationsAdmin(document.getElementById('admin-content'));
+        } else {
+            location.reload();
+        }
+    } catch (e) {
+        alert(`❌ Ошибка: ${e.message}`);
+    }
+}
+
 async function deleteFederation(fedId, fedName) {
     if (!confirm(`Вы уверены, что хотите удалить федерацию «${fedName}»?\n\nЭто действие удалит её из бота и API, а также все связанные баны.`)) {
         return;
@@ -1594,6 +1618,7 @@ async function renderFederationDetails(fedId) {
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                 <h3>🌐 ${fed.name}</h3>
                 <div>
+                    <button onclick="renameFederation(${fedId}, this.dataset.name)" data-name="${fed.name.replace(/"/g, '&quot;')}" style="background: none; border: none; font-size: 18px; cursor: pointer; margin-right: 8px;" title="Переименовать">✏️</button>
                     <button onclick="deleteFederation(${fedId}, '${fed.name.replace(/'/g, "\\'")}')" style="background: none; border: none; font-size: 18px; cursor: pointer; margin-right: 8px;" title="Удалить федерацию">🗑</button>
                     <button onclick="renderFederationsAdmin(document.getElementById('admin-content'))" style="background: none; border: none; font-size: 20px; cursor: pointer;">🔙</button>
                 </div>
@@ -1621,7 +1646,7 @@ async function renderFederationDetails(fedId) {
                                 <button onclick="fedAction(${fedId}, ${chat.chat_id}, 'approve')" style="background: #2ecc71; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer;">✅</button>
                                 <button onclick="fedAction(${fedId}, ${chat.chat_id}, 'reject')" style="background: #e74c3c; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer;">❌</button>
                             ` : `
-                                <button onclick="fedAction(${fedId}, ${chat.chat_id}, 'remove')" style="background: #e74c3c; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer;">🗑</button>
+                                <button onclick="fedAction(${fedId}, ${chat.chat_id}, 'remove')" style="background: #e74c3c; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600;">🚪 Выйти</button>
                             `}
                         </div>
                     </div>
@@ -1653,6 +1678,11 @@ async function renderFederationDetails(fedId) {
 }
 
 async function fedAction(fedId, chatId, action) {
+        if (action === 'remove' && !confirm('Вы уверены, что хотите исключить группу из федерации?
+
+Она больше не будет получать федеративные баны.')) {
+            return;
+        }
     if (!confirm(`Вы уверены, что хотите ${action === 'approve' ? 'одобрить' : action === 'reject' ? 'отклонить' : 'удалить'} группу?`)) return;
     
     try {
