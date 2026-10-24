@@ -1618,6 +1618,7 @@ async function renderFederationDetails(fedId) {
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                 <h3>🌐 ${fed.name}</h3>
                 <div>
+                    <button onclick="renameFederation(${fedId}, this.dataset.name)" data-name="${fed.name.replace(/"/g, '&quot;')}" style="background: none; border: none; font-size: 18px; cursor: pointer; margin-right: 8px;" title="Переименовать">✏️</button>
                     <button onclick="deleteFederation(${fedId}, '${fed.name.replace(/'/g, "\\'")}')" style="background: none; border: none; font-size: 18px; cursor: pointer; margin-right: 8px;" title="Удалить федерацию">🗑</button>
                     <button onclick="renderFederationsAdmin(document.getElementById('admin-content'))" style="background: none; border: none; font-size: 20px; cursor: pointer;">🔙</button>
                 </div>
@@ -1677,14 +1678,12 @@ async function renderFederationDetails(fedId) {
 }
 
 async function fedAction(fedId, chatId, action) {
-    if (action === 'remove' && !confirm('Вы уверены, что хотите исключить группу из федерации?
-
-Она больше не будет получать федеративные баны.')) {
-        return;
+    if (action === 'remove') {
+        if (!confirm('Вы уверены, что хотите исключить группу из федерации?\\n\\nОна больше не будет получать федеративные баны.')) return;
+    } else {
+        if (!confirm(`Вы уверены, что хотите ${action === 'approve' ? 'одобрить' : action === 'reject' ? 'отклонить' : 'удалить'} группу?`)) return;
     }
-    if (action !== 'remove' && !confirm(`Вы уверены, что хотите ${action === 'approve' ? 'одобрить' : action === 'reject' ? 'отклонить' : 'удалить'} группу?`)) return;
-    if (!confirm(`Вы уверены, что хотите ${action === 'approve' ? 'одобрить' : action === 'reject' ? 'отклонить' : 'удалить'} группу?`)) return;
-    
+
     try {
         const resp = await fetch(`${API_BASE}/api/admin/federations/action`, {
             method: 'POST',
