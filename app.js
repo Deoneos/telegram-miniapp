@@ -1678,11 +1678,35 @@ async function renderFederationDetails(fedId) {
 }
 
 async function fedAction(fedId, chatId, action) {
-        if (action === 'remove' && !confirm('Вы уверены, что хотите исключить группу из федерации?
+    if (action === 'remove') {
+        if (!confirm('Вы уверены, что хотите исключить группу из федерации?
 
 Она больше не будет получать федеративные баны.')) {
             return;
         }
+    } else {
+        if (!confirm(`Вы уверены, что хотите ${action === 'approve' ? 'одобрить' : action === 'reject' ? 'отклонить' : 'удалить'} группу?`)) {
+            return;
+        }
+    }
+
+    try {
+        const resp = await fetch(`${API_BASE}/api/admin/federations/action`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: user.id, federation_id: fedId, chat_id: chatId, action: action })
+        });
+
+        if (resp.ok) {
+            alert('✅ Успешно');
+            renderFederationDetails(fedId);
+        } else {
+            alert('❌ Ошибка');
+        }
+    } catch (e) {
+        alert('❌ Ошибка сети');
+    }
+}
     if (!confirm(`Вы уверены, что хотите ${action === 'approve' ? 'одобрить' : action === 'reject' ? 'отклонить' : 'удалить'} группу?`)) return;
     
     try {
