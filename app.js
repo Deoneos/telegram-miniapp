@@ -1551,6 +1551,28 @@ async function renderFederationsAdmin(container) {
 }
 
 
+async function renameFederation(fedId, currentName) {
+    const newName = prompt(`Введите новое название для федерации «${currentName}»:`, currentName);
+    if (!newName || newName.trim() === '' || newName.trim() === currentName) return;
+
+    try {
+        const resp = await fetch(`${API_BASE}/api/admin/federation/rename`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: user.id, federation_id: fedId, name: newName.trim() })
+        });
+        const data = await resp.json();
+        if (!resp.ok) throw new Error(data.detail || 'Ошибка сервера');
+        
+        alert(`✅ Федерация успешно переименована в «${newName.trim()}»`);
+        // Перезагружаем список федераций
+        if (typeof loadFederations === 'function') loadFederations();
+        else if (typeof loadAdminTab === 'function') loadAdminTab('federations');
+    } catch (e) {
+        alert(`❌ Ошибка: ${e.message}`);
+    }
+}
+
 async function deleteFederation(fedId, fedName) {
     if (!confirm(`Вы уверены, что хотите удалить федерацию «${fedName}»?\n\nЭто действие удалит её из бота и API, а также все связанные баны.`)) {
         return;
@@ -1594,7 +1616,8 @@ async function renderFederationDetails(fedId) {
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                 <h3>🌐 ${fed.name}</h3>
                 <div>
-                    <button onclick="deleteFederation(${fedId}, '${fed.name.replace(/'/g, "\\'")}')" style="background: none; border: none; font-size: 18px; cursor: pointer; margin-right: 8px;" title="Удалить федерацию">🗑</button>
+                    <button onclick="renameFederation(${fedId}, '${fed.name.replace(/'/g, "\\'")}')" style="background: none; border: none; font-size: 18px; cursor: pointer; margin-right: 8px;" title="Переименовать">✏️</button>
+                <button onclick="deleteFederation(${fedId}, '${fed.name.replace(/'/g, "\\'")}')" style="background: none; border: none; font-size: 18px; cursor: pointer; margin-right: 8px;" title="Удалить федерацию">🗑</button>
                     <button onclick="renderFederationsAdmin(document.getElementById('admin-content'))" style="background: none; border: none; font-size: 20px; cursor: pointer;">🔙</button>
                 </div>
             </div>
