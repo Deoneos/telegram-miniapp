@@ -1644,7 +1644,7 @@ async function renderFederationDetails(fedId) {
                                 <button onclick="fedAction(${fedId}, ${chat.chat_id}, 'approve')" style="background: #2ecc71; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer;">✅</button>
                                 <button onclick="fedAction(${fedId}, ${chat.chat_id}, 'reject')" style="background: #e74c3c; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer;">❌</button>
                             ` : `
-                                <button onclick="fedAction(${fedId}, ${chat.chat_id}, 'remove')" style="background: #e74c3c; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer;">🗑</button>
+                                <button onclick="fedAction(${fedId}, ${chat.chat_id}, 'remove')" style="background: #e74c3c; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600;">🚪 Выйти</button>
                             `}
                         </div>
                     </div>
@@ -1676,6 +1676,11 @@ async function renderFederationDetails(fedId) {
 }
 
 async function fedAction(fedId, chatId, action) {
+        if (action === 'remove' && !confirm('Вы уверены, что хотите исключить группу из федерации?
+
+Она больше не будет получать федеративные баны.')) {
+            return;
+        }
     if (!confirm(`Вы уверены, что хотите ${action === 'approve' ? 'одобрить' : action === 'reject' ? 'отклонить' : 'удалить'} группу?`)) return;
     
     try {
