@@ -126,6 +126,7 @@ async function loadGroups() {
     try {
         const response = await fetch(`${API_BASE}/api/groups?user_id=${user.id}`);
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        if (typeof hideApiError === 'function') hideApiError();
         const data = await response.json();
 
         if (data.stats && data.stats.total_chats > 0) {
@@ -183,6 +184,8 @@ async function loadGroups() {
         }).join('');
 
     } catch (e) {
+        if (typeof showApiError === 'function') showApiError();
+        
         console.error('Ошибка:', e);
         container.innerHTML = `
             <div class="empty-state">
@@ -1701,3 +1704,15 @@ async function fedAction(fedId, chatId, action) {
         alert('❌ Ошибка сети');
     }
 }
+
+
+// ===== U-8: БАННЕР ОШИБКИ API =====
+window.showApiError = function() {
+    const banner = document.getElementById('api-error-banner');
+    if (banner) banner.style.display = 'block';
+};
+
+window.hideApiError = function() {
+    const banner = document.getElementById('api-error-banner');
+    if (banner) banner.style.display = 'none';
+};
