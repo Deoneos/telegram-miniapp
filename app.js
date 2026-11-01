@@ -292,12 +292,12 @@ function renderSettings(s) {
 
     const currentMode = s.bot_mode || 'guard';
     const modeHtml = `
-        <div class="setting-row" style="margin-bottom: 20px; background: var(--tg-theme-secondary-bg-color, #232e3c); padding: 12px; border-radius: 12px;">
-            <div class="setting-info" style="margin-bottom: 10px;">
-                <div class="setting-name">${t('settings.mode_title')}</div>
-                <div class="setting-desc">${t('settings.mode_desc')}</div>
+        <div style="margin-bottom: 20px; background: var(--tg-theme-secondary-bg-color, #232e3c); padding: 16px; border-radius: 12px; display: flex; flex-direction: column; gap: 10px;">
+            <div>
+                <div style="font-weight: 600; font-size: 15px; margin-bottom: 4px;">${t('settings.mode_title')}</div>
+                <div style="font-size: 13px; color: var(--tg-theme-hint-color, #999);">${t('settings.mode_desc')}</div>
             </div>
-            <select id="bot-mode-select" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--tg-theme-hint-color, #444); background: var(--tg-theme-bg-color, #17212b); color: var(--tg-theme-text-color, #fff);">
+            <select id="bot-mode-select" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--tg-theme-hint-color, #444); background: var(--tg-theme-bg-color, #17212b); color: var(--tg-theme-text-color, #fff); font-size: 14px;">
                 <option value="guard" ${currentMode === 'guard' ? 'selected' : ''}>${t('settings.mode_guard')}</option>
                 <option value="analytics" ${currentMode === 'analytics' ? 'selected' : ''}>${t('settings.mode_analytics')}</option>
                 <option value="all" ${currentMode === 'all' ? 'selected' : ''}>${t('settings.mode_all')}</option>
