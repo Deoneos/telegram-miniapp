@@ -307,8 +307,8 @@ function renderSettings(s) {
         + `
             <div class="setting-row" style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
                 <div class="setting-info">
-                    <div class="setting-label">🤖 ML-фильтр (эксперимент)</div>
-                    <div class="setting-desc">Нейросеть для отлова скрытого спама (может ошибаться)</div>
+                    <div class="setting-label">${t('settings.ml_enabled')}</div>
+                    <div class="setting-desc">${t('settings.ml_desc')}</div>
                 </div>
                 <label class="switch">
                     <input type="checkbox" data-key="ml_enabled" ${s.ml_enabled ? 'checked' : ''}>
