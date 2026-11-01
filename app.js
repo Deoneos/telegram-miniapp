@@ -290,7 +290,22 @@ function renderSettings(s) {
     const ghostTrigger = s.ghost_trigger || 0;
     const isPaused = s.paused_until && new Date(s.paused_until) > new Date();
 
-    container.innerHTML =
+    const currentMode = s.bot_mode || 'guard';
+    const modeHtml = `
+        <div class="setting-row" style="margin-bottom: 20px; background: var(--tg-theme-secondary-bg-color, #232e3c); padding: 12px; border-radius: 12px;">
+            <div class="setting-info" style="margin-bottom: 10px;">
+                <div class="setting-name">${t('settings.mode_title')}</div>
+                <div class="setting-desc">${t('settings.mode_desc')}</div>
+            </div>
+            <select id="bot-mode-select" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--tg-theme-hint-color, #444); background: var(--tg-theme-bg-color, #17212b); color: var(--tg-theme-text-color, #fff);">
+                <option value="guard" ${currentMode === 'guard' ? 'selected' : ''}>${t('settings.mode_guard')}</option>
+                <option value="analytics" ${currentMode === 'analytics' ? 'selected' : ''}>${t('settings.mode_analytics')}</option>
+                <option value="all" ${currentMode === 'all' ? 'selected' : ''}>${t('settings.mode_all')}</option>
+            </select>
+        </div>
+    `;
+
+    container.innerHTML = modeHtml +
         items.map(it => `
             <div class="setting-row">
                 <div class="setting-info">
@@ -419,6 +434,9 @@ function renderSettings(s) {
 
     // Обычные тумблеры
     
+    
+
+    
     // Обработчик смены режима
     const modeSelect = container.querySelector('#bot-mode-select');
     if (modeSelect) {
@@ -432,23 +450,22 @@ function renderSettings(s) {
                     body: JSON.stringify({ user_id: user.id, key: 'bot_mode', value: newMode })
                 });
                 if (!resp.ok) throw new Error('HTTP ' + resp.status);
-                // Показываем тост
                 const msg = document.createElement('div');
-                msg.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#2ecc71;color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,0.3);';
+                msg.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#2ecc71;color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:9999;';
                 msg.textContent = '✅ Режим обновлен';
                 document.body.appendChild(msg);
                 setTimeout(() => msg.remove(), 2500);
             } catch (err) {
                 console.error('Ошибка смены режима:', err);
                 alert('❌ Ошибка сети');
-                e.target.value = currentMode; // откат
+                e.target.value = currentMode;
             } finally {
                 modeSelect.disabled = false;
             }
         });
     }
 
-    container.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+container.querySelectorAll('input[type="checkbox"]').forEach(cb => {
         if (cb.dataset.key !== 'ghost_enabled') {
             cb.addEventListener('change', () => toggleSetting(cb));
         }
