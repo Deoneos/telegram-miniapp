@@ -418,6 +418,36 @@ function renderSettings(s) {
         `;
 
     // Обычные тумблеры
+    
+    // Обработчик смены режима
+    const modeSelect = container.querySelector('#bot-mode-select');
+    if (modeSelect) {
+        modeSelect.addEventListener('change', async (e) => {
+            const newMode = e.target.value;
+            modeSelect.disabled = true;
+            try {
+                const resp = await fetch(`${API_BASE}/api/chat/${currentChartChatId}/settings`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: user.id, key: 'bot_mode', value: newMode })
+                });
+                if (!resp.ok) throw new Error('HTTP ' + resp.status);
+                // Показываем тост
+                const msg = document.createElement('div');
+                msg.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#2ecc71;color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,0.3);';
+                msg.textContent = '✅ Режим обновлен';
+                document.body.appendChild(msg);
+                setTimeout(() => msg.remove(), 2500);
+            } catch (err) {
+                console.error('Ошибка смены режима:', err);
+                alert('❌ Ошибка сети');
+                e.target.value = currentMode; // откат
+            } finally {
+                modeSelect.disabled = false;
+            }
+        });
+    }
+
     container.querySelectorAll('input[type="checkbox"]').forEach(cb => {
         if (cb.dataset.key !== 'ghost_enabled') {
             cb.addEventListener('change', () => toggleSetting(cb));

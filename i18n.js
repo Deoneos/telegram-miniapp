@@ -235,6 +235,13 @@ const TRANSLATIONS = {
     // Footer + Landing link
     'footer.about': { ru: '🌐 О боте', en: '🌐 About the bot' },
     'groups.learn_more': { ru: '🌐 Узнать больше о боте', en: '🌐 Learn more about the bot' },
+
+    'settings.mode_title': { ru: '🎯 Режим работы бота', en: '🎯 Bot Mode' },
+    'settings.mode_desc': { ru: 'Выберите, что для вас важнее всего', en: 'Choose what is most important to you' },
+    'settings.mode_guard': { ru: '🛡️ Только защита (Антиспам)', en: '🛡️ Guard (Anti-spam)' },
+    'settings.mode_analytics': { ru: '📊 Только аналитика', en: '📊 Analytics' },
+    'settings.mode_all': { ru: '🔥 Всё сразу (Комбайн)', en: '🔥 All-in-one' },
+
 };
 
 // ===== ОПРЕДЕЛЕНИЕ ЯЗЫКА =====
