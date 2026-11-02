@@ -331,6 +331,17 @@ function renderSettings(s) {
                     <span class="slider"></span>
                 </label>
             </div>
+            <div class="setting-row" style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
+                <div class="setting-info">
+                    <div class="setting-label">🤫 Тихое администрирование</div>
+                    <div class="setting-desc">Удалять спам без публичных предупреждений в чате</div>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" data-key="silent_mode" ${s.silent_mode == 1 ? 'checked' : ''}>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
 
         <div class="setting-row">
             <div class="setting-info">
