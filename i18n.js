@@ -242,6 +242,9 @@ const TRANSLATIONS = {
     'settings.mode_analytics': { ru: '📊 Только аналитика', en: '📊 Analytics' },
     'settings.mode_all': { ru: '🔥 Всё сразу (Комбайн)', en: '🔥 All-in-one' },
 
+
+    'settings.silent_mode': { ru: '🤫 Тихое администрирование', en: '🤫 Silent Moderation' },
+    'settings.silent_mode_desc': { ru: 'Удалять спам без публичных предупреждений в чате', en: 'Delete spam without public warnings in chat' },
 };
 
 // ===== ОПРЕДЕЛЕНИЕ ЯЗЫКА =====
