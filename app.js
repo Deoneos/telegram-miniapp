@@ -1770,43 +1770,69 @@ window.hideApiError = function() {
 window.switchModalTab = function(tab) {
     const isAnalytics = (tab === 'analytics');
     
-    // 1. Скрываем/Показываем настройки модерации
-    const settingsContainer = document.querySelector('.modal-settings-container');
-    if (settingsContainer) settingsContainer.style.display = isAnalytics ? 'none' : 'block';
-    
-    // 2. Скрываем/Показываем графики
-    // Находим все элементы графиков (заголовки, canvas, кнопки периода)
-    const analyticsElements = document.querySelectorAll('#chart-title, .modal-chart-wrap, .chart-period-switch');
-    analyticsElements.forEach(el => {
-        // Не трогаем заголовок "Настройки модерации", если он внутри контейнера настроек
-        if (!el.closest('.modal-settings-container')) {
-            el.style.display = isAnalytics ? 'block' : 'none';
-        }
-    });
-    
-    // 3. Переключаем визуальный стиль кнопок
+    // 1. Переключаем стили кнопок
     const btnSettings = document.getElementById('tab-settings-btn');
     const btnAnalytics = document.getElementById('tab-analytics-btn');
     
     if (isAnalytics) {
-        btnAnalytics.classList.add('btn-primary');
-        btnAnalytics.classList.remove('btn-secondary');
-        btnAnalytics.style.background = '';
-        btnAnalytics.style.border = 'none';
-        
-        btnSettings.classList.add('btn-secondary');
-        btnSettings.classList.remove('btn-primary');
-        btnSettings.style.background = 'transparent';
-        btnSettings.style.border = '1px solid #555';
+        btnAnalytics.classList.add('btn-primary'); btnAnalytics.classList.remove('btn-secondary');
+        btnAnalytics.style.background = ''; btnAnalytics.style.border = 'none';
+        btnSettings.classList.add('btn-secondary'); btnSettings.classList.remove('btn-primary');
+        btnSettings.style.background = 'transparent'; btnSettings.style.border = '1px solid #555';
     } else {
-        btnSettings.classList.add('btn-primary');
-        btnSettings.classList.remove('btn-secondary');
-        btnSettings.style.background = '';
-        btnSettings.style.border = 'none';
+        btnSettings.classList.add('btn-primary'); btnSettings.classList.remove('btn-secondary');
+        btnSettings.style.background = ''; btnSettings.style.border = 'none';
+        btnAnalytics.classList.add('btn-secondary'); btnAnalytics.classList.remove('btn-primary');
+        btnAnalytics.style.background = 'transparent'; btnAnalytics.style.border = '1px solid #555';
+    }
+
+    // 2. Находим все заголовки h4 и div для поиска нужных блоков
+    const allTitles = Array.from(document.querySelectorAll('h4, .modal-chart-title'));
+    
+    // Элементы аналитики
+    const chartTitle = document.getElementById('chart-title');
+    const charts = document.querySelectorAll('.modal-chart-wrap, .chart-period-switch');
+    const catTitle = allTitles.find(h => h.textContent.includes('Категории нарушений'));
+    const topTitle = allTitles.find(h => h.textContent.includes('Топ нарушителей'));
+    const violatorsList = document.getElementById('violators-list');
+    
+    // Элементы управления
+    const settingsContainer = document.querySelector('.modal-settings-container');
+    const textsBtn = document.getElementById('custom-texts-open-btn');
+    const textsTitle = allTitles.find(h => h.textContent.includes('Тексты модерации'));
+    
+    if (isAnalytics) {
+        // СКРЫВАЕМ УПРАВЛЕНИЕ
+        if (settingsContainer) settingsContainer.style.display = 'none';
+        if (textsTitle) textsTitle.style.display = 'none';
+        if (textsBtn) {
+            textsBtn.style.display = 'none';
+            // Скрываем весь родительский контейнер с описанием
+            const parent = textsBtn.closest('.modal-texts-section') || textsBtn.closest('div');
+            if (parent && parent !== document.body) parent.style.display = 'none';
+        }
         
-        btnAnalytics.classList.add('btn-secondary');
-        btnAnalytics.classList.remove('btn-primary');
-        btnAnalytics.style.background = 'transparent';
-        btnAnalytics.style.border = '1px solid #555';
+        // ПОКАЗЫВАЕМ АНАЛИТИКУ
+        if (chartTitle) chartTitle.style.display = 'block';
+        charts.forEach(c => c.style.display = 'block');
+        if (catTitle) catTitle.style.display = 'block';
+        if (topTitle) topTitle.style.display = 'block';
+        if (violatorsList) violatorsList.style.display = 'flex';
+    } else {
+        // ПОКАЗЫВАЕМ УПРАВЛЕНИЕ
+        if (settingsContainer) settingsContainer.style.display = 'block';
+        if (textsTitle) textsTitle.style.display = 'block';
+        if (textsBtn) {
+            textsBtn.style.display = 'block';
+            const parent = textsBtn.closest('.modal-texts-section') || textsBtn.closest('div');
+            if (parent && parent !== document.body) parent.style.display = 'block';
+        }
+        
+        // СКРЫВАЕМ АНАЛИТИКУ
+        if (chartTitle) chartTitle.style.display = 'none';
+        charts.forEach(c => c.style.display = 'none');
+        if (catTitle) catTitle.style.display = 'none';
+        if (topTitle) topTitle.style.display = 'none';
+        if (violatorsList) violatorsList.style.display = 'none';
     }
 };
