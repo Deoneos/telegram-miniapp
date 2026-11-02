@@ -1836,3 +1836,37 @@ window.switchModalTab = function(tab) {
         if (violatorsList) violatorsList.style.display = 'none';
     }
 };
+
+
+// === ФИКС КНОПОК ПЕРИОДА (7/30/90) ===
+(function fixPeriodButtons() {
+    const style = document.createElement('style');
+    style.innerHTML = `
+        .chart-period-switch {
+            display: flex !important;
+            gap: 10px !important;
+            width: 100% !important;
+            margin-top: 16px !important;
+            margin-bottom: 16px !important;
+        }
+        .period-btn {
+            flex: 1 !important;
+            padding: 10px 12px !important;
+            border-radius: 8px !important;
+            border: 1px solid var(--tg-theme-hint-color, #444) !important;
+            background: transparent !important;
+            color: var(--tg-theme-text-color, #fff) !important;
+            cursor: pointer !important;
+            font-size: 14px !important;
+            font-weight: 500 !important;
+            text-align: center !important;
+            transition: 0.2s !important;
+        }
+        .period-btn.active {
+            background: var(--tg-theme-button-color, #5288c1) !important;
+            color: var(--tg-theme-button-text-color, #ffffff) !important;
+            border-color: transparent !important;
+        }
+    `;
+    document.head.appendChild(style);
+})();
