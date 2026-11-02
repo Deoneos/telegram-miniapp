@@ -235,6 +235,7 @@ function openGroupModal(chatId, title, chatType, deleted, bans, violations, adde
     loadCategoriesChart(chatId, savedDays);
     loadTopViolators(chatId);
     loadChatSettings(chatId);
+    if (typeof switchModalTab === 'function') switchModalTab('settings');
     document.getElementById('modal-overlay').style.display = 'flex';
 }
 
@@ -1762,4 +1763,50 @@ window.showApiError = function() {
 window.hideApiError = function() {
     const banner = document.getElementById('api-error-banner');
     if (banner) banner.style.display = 'none';
+};
+
+
+// === ЛОГИКА ВКЛАДОК (Управление / Аналитика) ===
+window.switchModalTab = function(tab) {
+    const isAnalytics = (tab === 'analytics');
+    
+    // 1. Скрываем/Показываем настройки модерации
+    const settingsContainer = document.querySelector('.modal-settings-container');
+    if (settingsContainer) settingsContainer.style.display = isAnalytics ? 'none' : 'block';
+    
+    // 2. Скрываем/Показываем графики
+    // Находим все элементы графиков (заголовки, canvas, кнопки периода)
+    const analyticsElements = document.querySelectorAll('#chart-title, .modal-chart-wrap, .chart-period-switch');
+    analyticsElements.forEach(el => {
+        // Не трогаем заголовок "Настройки модерации", если он внутри контейнера настроек
+        if (!el.closest('.modal-settings-container')) {
+            el.style.display = isAnalytics ? 'block' : 'none';
+        }
+    });
+    
+    // 3. Переключаем визуальный стиль кнопок
+    const btnSettings = document.getElementById('tab-settings-btn');
+    const btnAnalytics = document.getElementById('tab-analytics-btn');
+    
+    if (isAnalytics) {
+        btnAnalytics.classList.add('btn-primary');
+        btnAnalytics.classList.remove('btn-secondary');
+        btnAnalytics.style.background = '';
+        btnAnalytics.style.border = 'none';
+        
+        btnSettings.classList.add('btn-secondary');
+        btnSettings.classList.remove('btn-primary');
+        btnSettings.style.background = 'transparent';
+        btnSettings.style.border = '1px solid #555';
+    } else {
+        btnSettings.classList.add('btn-primary');
+        btnSettings.classList.remove('btn-secondary');
+        btnSettings.style.background = '';
+        btnSettings.style.border = 'none';
+        
+        btnAnalytics.classList.add('btn-secondary');
+        btnAnalytics.classList.remove('btn-primary');
+        btnAnalytics.style.background = 'transparent';
+        btnAnalytics.style.border = '1px solid #555';
+    }
 };

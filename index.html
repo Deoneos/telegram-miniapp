@@ -163,7 +163,13 @@
             <div class="modal-info" id="modal-info"></div>
 
             <div class="modal-chart-container">
-                <h4 class="modal-chart-title" id="chart-title" data-i18n="modal.chart_title_30">📊 Активность за 30 дней</h4>
+                <!-- ВКЛАДКИ -->
+            <div id="modal-tabs" style="display: flex; gap: 10px; margin-bottom: 15px;">
+                <button id="tab-settings-btn" onclick="switchModalTab('settings')" class="btn btn-primary" style="flex: 1; padding: 10px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; transition: 0.2s;">⚙️ Управление</button>
+                <button id="tab-analytics-btn" onclick="switchModalTab('analytics')" class="btn btn-secondary" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #555; background: transparent; color: white; font-weight: 600; cursor: pointer; transition: 0.2s;">📊 Аналитика</button>
+            </div>
+
+            <h4 class="modal-chart-title" id="chart-title" data-i18n="modal.chart_title_30">📊 Активность за 30 дней</h4>
                 <div class="modal-chart-wrap">
                     <canvas id="chart-timeline"></canvas>
                 </div>
