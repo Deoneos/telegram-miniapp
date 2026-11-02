@@ -1804,80 +1804,45 @@ window.hideApiError = function() {
 
 // === ЛОГИКА ВКЛАДОК (Управление / Аналитика) ===
 window.switchModalTab = function(tab) {
-    const isAnalytics = (tab === 'analytics' || tabName === 'analytics');
+    const isAnalytics = (tab === 'analytics');
+
+    const settingsBtn = document.getElementById('tab-settings-btn');
+    const analyticsBtn = document.getElementById('tab-analytics-btn');
+    if (settingsBtn && analyticsBtn) {
+        if (isAnalytics) {
+            analyticsBtn.classList.add('btn-primary');
+            analyticsBtn.classList.remove('btn-secondary');
+            analyticsBtn.style.background = '';
+            analyticsBtn.style.border = 'none';
+            settingsBtn.classList.add('btn-secondary');
+            settingsBtn.classList.remove('btn-primary');
+            settingsBtn.style.background = 'transparent';
+            settingsBtn.style.border = '1px solid #555';
+        } else {
+            settingsBtn.classList.add('btn-primary');
+            settingsBtn.classList.remove('btn-secondary');
+            settingsBtn.style.background = '';
+            settingsBtn.style.border = 'none';
+            analyticsBtn.classList.add('btn-secondary');
+            analyticsBtn.classList.remove('btn-primary');
+            analyticsBtn.style.background = 'transparent';
+            analyticsBtn.style.border = '1px solid #555';
+        }
+    }
+
+    const settingsSection = document.getElementById('settings-toggles');
+    const analyticsSection = document.getElementById('modal-analytics-section');
+    const modTitle = document.querySelector('.settings-title');
+
+    if (settingsSection) settingsSection.style.display = isAnalytics ? 'none' : 'block';
+    if (analyticsSection) analyticsSection.style.display = isAnalytics ? 'block' : 'none';
+    if (modTitle) modTitle.style.display = isAnalytics ? 'none' : 'block';
+
     const periodBtns = document.querySelector('.chart-period-switch');
     if (periodBtns) {
         periodBtns.style.display = isAnalytics ? 'flex' : 'none';
     }
-
-    const isAnalytics = (tab === 'analytics');
-    
-    // 1. Переключаем стили кнопок
-    const btnSettings = document.getElementById('tab-settings-btn');
-    const btnAnalytics = document.getElementById('tab-analytics-btn');
-    
-    if (isAnalytics) {
-        btnAnalytics.classList.add('btn-primary'); btnAnalytics.classList.remove('btn-secondary');
-        btnAnalytics.style.background = ''; btnAnalytics.style.border = 'none';
-        btnSettings.classList.add('btn-secondary'); btnSettings.classList.remove('btn-primary');
-        btnSettings.style.background = 'transparent'; btnSettings.style.border = '1px solid #555';
-    } else {
-        btnSettings.classList.add('btn-primary'); btnSettings.classList.remove('btn-secondary');
-        btnSettings.style.background = ''; btnSettings.style.border = 'none';
-        btnAnalytics.classList.add('btn-secondary'); btnAnalytics.classList.remove('btn-primary');
-        btnAnalytics.style.background = 'transparent'; btnAnalytics.style.border = '1px solid #555';
-    }
-
-    // 2. Находим все заголовки h4 и div для поиска нужных блоков
-    const allTitles = Array.from(document.querySelectorAll('h4, .modal-chart-title'));
-    
-    // Элементы аналитики
-    const chartTitle = document.getElementById('chart-title');
-    const charts = document.querySelectorAll('.modal-chart-wrap, .chart-period-switch');
-    const catTitle = allTitles.find(h => h.textContent.includes('Категории нарушений'));
-    const topTitle = allTitles.find(h => h.textContent.includes('Топ нарушителей'));
-    const violatorsList = document.getElementById('violators-list');
-    
-    // Элементы управления
-    const settingsContainer = document.querySelector('.modal-settings-container');
-    const textsBtn = document.getElementById('custom-texts-open-btn');
-    const textsTitle = allTitles.find(h => h.textContent.includes('Тексты модерации'));
-    
-    if (isAnalytics) {
-        // СКРЫВАЕМ УПРАВЛЕНИЕ
-        if (settingsContainer) settingsContainer.style.display = 'none';
-        if (textsTitle) textsTitle.style.display = 'none';
-        if (textsBtn) {
-            textsBtn.style.display = 'none';
-            // Скрываем весь родительский контейнер с описанием
-            const parent = textsBtn.closest('.modal-texts-section') || textsBtn.closest('div');
-            if (parent && parent !== document.body) parent.style.display = 'none';
-        }
-        
-        // ПОКАЗЫВАЕМ АНАЛИТИКУ
-        if (chartTitle) chartTitle.style.display = 'block';
-        charts.forEach(c => c.style.display = 'block');
-        if (catTitle) catTitle.style.display = 'block';
-        if (topTitle) topTitle.style.display = 'block';
-        if (violatorsList) violatorsList.style.display = 'flex';
-    } else {
-        // ПОКАЗЫВАЕМ УПРАВЛЕНИЕ
-        if (settingsContainer) settingsContainer.style.display = 'block';
-        if (textsTitle) textsTitle.style.display = 'block';
-        if (textsBtn) {
-            textsBtn.style.display = 'block';
-            const parent = textsBtn.closest('.modal-texts-section') || textsBtn.closest('div');
-            if (parent && parent !== document.body) parent.style.display = 'block';
-        }
-        
-        // СКРЫВАЕМ АНАЛИТИКУ
-        if (chartTitle) chartTitle.style.display = 'none';
-        charts.forEach(c => c.style.display = 'none');
-        if (catTitle) catTitle.style.display = 'none';
-        if (topTitle) topTitle.style.display = 'none';
-        if (violatorsList) violatorsList.style.display = 'none';
-    }
-};
+};;
 
 
 // === ФИКС КНОПОК ПЕРИОДА (7/30/90) ===
