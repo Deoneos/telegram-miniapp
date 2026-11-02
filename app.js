@@ -1805,6 +1805,7 @@ window.hideApiError = function() {
 // === ЛОГИКА ВКЛАДОК (Управление / Аналитика) ===
 window.switchModalTab = function(tab) {
     const isAnalytics = (tab === 'analytics');
+    const lang = localStorage.getItem('lang') || 'ru';
 
     // 1. Стили кнопок вкладок
     const settingsBtn = document.getElementById('tab-settings-btn');
@@ -1821,53 +1822,65 @@ window.switchModalTab = function(tab) {
             analyticsBtn.classList.add('btn-secondary'); analyticsBtn.classList.remove('btn-primary');
             analyticsBtn.style.background = 'transparent'; analyticsBtn.style.border = '1px solid #555';
         }
+        // Перевод кнопок
+        settingsBtn.textContent = lang === 'en' ? '⚙️ Management' : '⚙️ Управление';
+        analyticsBtn.textContent = lang === 'en' ? '📊 Analytics' : '📊 Аналитика';
     }
 
-    const setDisplay = (selector, displayVal) => {
-        if (typeof selector === 'string') {
-            document.querySelectorAll(selector).forEach(el => el.style.display = displayVal);
-        } else if (selector) {
-            selector.style.display = displayVal;
-        }
-    };
+    // 2. Функция для скрытия/показа целых секций
+    const toggleEl = (el, show) => { if(el) el.style.display = show ? 'block' : 'none'; };
+    const toggleFlex = (el, show) => { if(el) el.style.display = show ? 'flex' : 'none'; };
 
-    // 2. Прячем/показываем элементы
+    // Находим все нужные контейнеры
+    const periodBtns = document.querySelector('.chart-period-switch');
+    const chartTitle = document.getElementById('chart-title');
+    const charts = document.querySelectorAll('.modal-chart-wrap');
+    const settingsContainer = document.getElementById('settings-toggles');
+    const settingsHint = document.getElementById('settings-hint');
+    const customTextsBtn = document.getElementById('custom-texts-open-btn');
+    
+    // Заголовки "Категории" и "Топ нарушителей"
+    let catTitle = null, topTitle = null;
+    document.querySelectorAll('h4').forEach(h => {
+        if (h.textContent.includes('Категории') || h.textContent.includes('Categories')) catTitle = h;
+        if (h.textContent.includes('Топ нарушителей') || h.textContent.includes('Top violators')) topTitle = h;
+    });
+    
+    const violatorsList = document.getElementById('violators-list');
+
     if (isAnalytics) {
-        // СКРЫВАЕМ НАСТРОЙКИ
-        setDisplay('#settings-toggles', 'none');
-        setDisplay('#settings-hint', 'none');
-        setDisplay('#custom-texts-open-btn', 'none');
-        if (document.getElementById('custom-texts-open-btn')?.parentNode) {
-            document.getElementById('custom-texts-open-btn').parentNode.style.display = 'none';
-        }
-        Array.from(document.querySelectorAll('h4')).forEach(h => { if(h.textContent.includes('Тексты модерации')) h.style.display = 'none'; });
+        // --- РЕЖИМ АНАЛИТИКИ ---
+        // Скрываем настройки
+        toggleEl(settingsContainer, false);
+        toggleEl(settingsHint, false);
+        toggleEl(customTextsBtn, false);
+        if (customTextsBtn && customTextsBtn.parentElement) toggleEl(customTextsBtn.parentElement, false);
+        // Скрываем заголовок "Настройки модерации"
+        document.querySelectorAll('.settings-title').forEach(el => toggleEl(el, false));
 
-        // ПОКАЗЫВАЕМ АНАЛИТИКУ
-        setDisplay('#chart-title', 'block');
-        setDisplay('.modal-chart-wrap', 'block');
-        setDisplay('.chart-period-switch', 'flex');
-        Array.from(document.querySelectorAll('h4')).forEach(h => { 
-            if(h.textContent.includes('Категории нарушений') || h.textContent.includes('Топ нарушителей')) h.style.display = 'block'; 
-        });
-        setDisplay('#violators-list', 'flex');
+        // Показываем аналитику
+        toggleEl(chartTitle, true);
+        charts.forEach(el => toggleEl(el, true));
+        toggleFlex(periodBtns, true);
+        toggleEl(catTitle, true);
+        toggleEl(topTitle, true);
+        toggleFlex(violatorsList, true);
     } else {
-        // ПОКАЗЫВАЕМ НАСТРОЙКИ
-        setDisplay('#settings-toggles', 'block');
-        setDisplay('#settings-hint', 'block');
-        setDisplay('#custom-texts-open-btn', 'block');
-        if (document.getElementById('custom-texts-open-btn')?.parentNode) {
-            document.getElementById('custom-texts-open-btn').parentNode.style.display = 'block';
-        }
-        Array.from(document.querySelectorAll('h4')).forEach(h => { if(h.textContent.includes('Тексты модерации')) h.style.display = 'block'; });
+        // --- РЕЖИМ УПРАВЛЕНИЯ ---
+        // Показываем настройки
+        toggleEl(settingsContainer, true);
+        toggleEl(settingsHint, true);
+        toggleEl(customTextsBtn, true);
+        if (customTextsBtn && customTextsBtn.parentElement) toggleEl(customTextsBtn.parentElement, true);
+        document.querySelectorAll('.settings-title').forEach(el => toggleEl(el, true));
 
-        // СКРЫВАЕМ АНАЛИТИКУ
-        setDisplay('#chart-title', 'none');
-        setDisplay('.modal-chart-wrap', 'none');
-        setDisplay('.chart-period-switch', 'none');
-        Array.from(document.querySelectorAll('h4')).forEach(h => { 
-            if(h.textContent.includes('Категории нарушений') || h.textContent.includes('Топ нарушителей')) h.style.display = 'none'; 
-        });
-        setDisplay('#violators-list', 'none');
+        // Скрываем ВСЮ аналитику (графики, кнопки 7/30/90, категории, топ)
+        toggleEl(chartTitle, false);
+        charts.forEach(el => toggleEl(el, false));
+        toggleFlex(periodBtns, false);
+        toggleEl(catTitle, false);
+        toggleEl(topTitle, false);
+        toggleFlex(violatorsList, false);
     }
 };;
 
