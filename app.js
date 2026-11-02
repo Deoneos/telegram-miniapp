@@ -1806,41 +1806,68 @@ window.hideApiError = function() {
 window.switchModalTab = function(tab) {
     const isAnalytics = (tab === 'analytics');
 
+    // 1. Стили кнопок вкладок
     const settingsBtn = document.getElementById('tab-settings-btn');
     const analyticsBtn = document.getElementById('tab-analytics-btn');
     if (settingsBtn && analyticsBtn) {
         if (isAnalytics) {
-            analyticsBtn.classList.add('btn-primary');
-            analyticsBtn.classList.remove('btn-secondary');
-            analyticsBtn.style.background = '';
-            analyticsBtn.style.border = 'none';
-            settingsBtn.classList.add('btn-secondary');
-            settingsBtn.classList.remove('btn-primary');
-            settingsBtn.style.background = 'transparent';
-            settingsBtn.style.border = '1px solid #555';
+            analyticsBtn.classList.add('btn-primary'); analyticsBtn.classList.remove('btn-secondary');
+            analyticsBtn.style.background = ''; analyticsBtn.style.border = 'none';
+            settingsBtn.classList.add('btn-secondary'); settingsBtn.classList.remove('btn-primary');
+            settingsBtn.style.background = 'transparent'; settingsBtn.style.border = '1px solid #555';
         } else {
-            settingsBtn.classList.add('btn-primary');
-            settingsBtn.classList.remove('btn-secondary');
-            settingsBtn.style.background = '';
-            settingsBtn.style.border = 'none';
-            analyticsBtn.classList.add('btn-secondary');
-            analyticsBtn.classList.remove('btn-primary');
-            analyticsBtn.style.background = 'transparent';
-            analyticsBtn.style.border = '1px solid #555';
+            settingsBtn.classList.add('btn-primary'); settingsBtn.classList.remove('btn-secondary');
+            settingsBtn.style.background = ''; settingsBtn.style.border = 'none';
+            analyticsBtn.classList.add('btn-secondary'); analyticsBtn.classList.remove('btn-primary');
+            analyticsBtn.style.background = 'transparent'; analyticsBtn.style.border = '1px solid #555';
         }
     }
 
-    const settingsSection = document.getElementById('settings-toggles');
-    const analyticsSection = document.getElementById('modal-analytics-section');
-    const modTitle = document.querySelector('.settings-title');
+    const setDisplay = (selector, displayVal) => {
+        if (typeof selector === 'string') {
+            document.querySelectorAll(selector).forEach(el => el.style.display = displayVal);
+        } else if (selector) {
+            selector.style.display = displayVal;
+        }
+    };
 
-    if (settingsSection) settingsSection.style.display = isAnalytics ? 'none' : 'block';
-    if (analyticsSection) analyticsSection.style.display = isAnalytics ? 'block' : 'none';
-    if (modTitle) modTitle.style.display = isAnalytics ? 'none' : 'block';
+    // 2. Прячем/показываем элементы
+    if (isAnalytics) {
+        // СКРЫВАЕМ НАСТРОЙКИ
+        setDisplay('#settings-toggles', 'none');
+        setDisplay('#settings-hint', 'none');
+        setDisplay('#custom-texts-open-btn', 'none');
+        if (document.getElementById('custom-texts-open-btn')?.parentNode) {
+            document.getElementById('custom-texts-open-btn').parentNode.style.display = 'none';
+        }
+        Array.from(document.querySelectorAll('h4')).forEach(h => { if(h.textContent.includes('Тексты модерации')) h.style.display = 'none'; });
 
-    const periodBtns = document.querySelector('.chart-period-switch');
-    if (periodBtns) {
-        periodBtns.style.display = isAnalytics ? 'flex' : 'none';
+        // ПОКАЗЫВАЕМ АНАЛИТИКУ
+        setDisplay('#chart-title', 'block');
+        setDisplay('.modal-chart-wrap', 'block');
+        setDisplay('.chart-period-switch', 'flex');
+        Array.from(document.querySelectorAll('h4')).forEach(h => { 
+            if(h.textContent.includes('Категории нарушений') || h.textContent.includes('Топ нарушителей')) h.style.display = 'block'; 
+        });
+        setDisplay('#violators-list', 'flex');
+    } else {
+        // ПОКАЗЫВАЕМ НАСТРОЙКИ
+        setDisplay('#settings-toggles', 'block');
+        setDisplay('#settings-hint', 'block');
+        setDisplay('#custom-texts-open-btn', 'block');
+        if (document.getElementById('custom-texts-open-btn')?.parentNode) {
+            document.getElementById('custom-texts-open-btn').parentNode.style.display = 'block';
+        }
+        Array.from(document.querySelectorAll('h4')).forEach(h => { if(h.textContent.includes('Тексты модерации')) h.style.display = 'block'; });
+
+        // СКРЫВАЕМ АНАЛИТИКУ
+        setDisplay('#chart-title', 'none');
+        setDisplay('.modal-chart-wrap', 'none');
+        setDisplay('.chart-period-switch', 'none');
+        Array.from(document.querySelectorAll('h4')).forEach(h => { 
+            if(h.textContent.includes('Категории нарушений') || h.textContent.includes('Топ нарушителей')) h.style.display = 'none'; 
+        });
+        setDisplay('#violators-list', 'none');
     }
 };;
 
@@ -1877,3 +1904,12 @@ window.switchModalTab = function(tab) {
     `;
     document.head.appendChild(style);
 })();
+
+// Перевод названий вкладок
+function updateTabLabels() {
+    const lang = localStorage.getItem('lang') || 'ru';
+    const sBtn = document.getElementById('tab-settings-btn');
+    const aBtn = document.getElementById('tab-analytics-btn');
+    if (sBtn) sBtn.textContent = lang === 'en' ? '⚙️ Management' : '⚙️ Управление';
+    if (aBtn) aBtn.textContent = lang === 'en' ? '📊 Analytics' : '📊 Аналитика';
+}
