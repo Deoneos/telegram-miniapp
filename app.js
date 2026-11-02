@@ -1804,6 +1804,12 @@ window.hideApiError = function() {
 
 // === ЛОГИКА ВКЛАДОК (Управление / Аналитика) ===
 window.switchModalTab = function(tab) {
+    const isAnalytics = (tab === 'analytics' || tabName === 'analytics');
+    const periodBtns = document.querySelector('.chart-period-switch');
+    if (periodBtns) {
+        periodBtns.style.display = isAnalytics ? 'flex' : 'none';
+    }
+
     const isAnalytics = (tab === 'analytics');
     
     // 1. Переключаем стили кнопок
