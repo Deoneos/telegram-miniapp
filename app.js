@@ -1846,7 +1846,9 @@ window.switchModalTab = function(tab) {
         // Показываем аналитику
         setDisplay('#chart-title', 'block');
         setDisplay('.modal-chart-wrap', 'block');
-        setDisplay('.chart-period-switch', 'flex'); // Кнопки 7/30/90
+        document.querySelectorAll('.chart-period-switch').forEach(el => {
+            el.style.setProperty('display', 'flex', 'important');
+        });
         setDisplay('#violators-list', 'flex');
         document.querySelectorAll('h4').forEach(el => {
             if(el.textContent.includes('Категории') || el.textContent.includes('Топ')) el.style.display = 'block';
@@ -1866,7 +1868,9 @@ window.switchModalTab = function(tab) {
         // Скрываем аналитику
         setDisplay('#chart-title', 'none');
         setDisplay('.modal-chart-wrap', 'none');
-        setDisplay('.chart-period-switch', 'none'); // Прячем кнопки 7/30/90
+        document.querySelectorAll('.chart-period-switch').forEach(el => {
+            el.style.setProperty('display', 'none', 'important');
+        });
         setDisplay('#violators-list', 'none');
         document.querySelectorAll('h4').forEach(el => {
             if(el.textContent.includes('Категории') || el.textContent.includes('Топ')) el.style.display = 'none';
