@@ -333,7 +333,7 @@ function renderSettings(s) {
 
         container.innerHTML =
         items.map(it => `
-            <div class="setting-row">
+            <div class="setting-row" style="margin-bottom: 12px; padding: 12px; border-radius: 12px; background: var(--tg-theme-secondary-bg-color, #232e3c);">
                 <div class="setting-info">
                     <div class="setting-name">${it.label}</div>
                     <div class="setting-desc">${it.desc}</div>
@@ -346,7 +346,7 @@ function renderSettings(s) {
             </div>
         `).join('')
         + `
-            <div class="setting-row" style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
+            <div class="setting-row" style="margin-top: 20px;">
                 <div class="setting-info">
                     <div class="setting-label">${t('settings.ml_enabled')}</div>
                     <div class="setting-desc">${t('settings.ml_desc')}</div>
@@ -356,10 +356,10 @@ function renderSettings(s) {
                     <span class="slider"></span>
                 </label>
             </div>
-            <div class="setting-row" style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
+            <div class="setting-row" style="margin-top: 20px;">
                 <div class="setting-info">
-                    <div class="setting-label">🤫 Тихое администрирование</div>
-                    <div class="setting-desc">Удалять спам без публичных предупреждений в чате</div>
+                    <div class="setting-label">${t('settings.silent_mode')}</div>
+                    <div class="setting-desc">${t('settings.silent_mode_desc')}</div>
                 </div>
                 <label class="switch">
                     <input type="checkbox" data-key="silent_mode" ${s.silent_mode == 1 ? 'checked' : ''}>
@@ -368,7 +368,7 @@ function renderSettings(s) {
             </div>
 
 
-        <div class="setting-row">
+        <div class="setting-row" style="margin-bottom: 12px; padding: 12px; border-radius: 12px; background: var(--tg-theme-secondary-bg-color, #232e3c);">
             <div class="setting-info">
                 <div class="setting-name">${t('settings.ghost')}</div>
                 <div class="setting-desc">${t('settings.ghost_desc')}</div>
@@ -380,7 +380,7 @@ function renderSettings(s) {
             </label>
         </div>
         <!-- Выключить бота -->
-        <div class="setting-row" style="margin-top: 16px; padding: 12px; background: var(--tg-theme-secondary-bg-color, #232e3c); border-radius: 12px; border: 1px solid ${isPaused ? 'var(--tg-theme-button-color, #5288c1)' : 'transparent'};">
+        <div class="setting-row" style="margin-top: 16px; border: 1px solid ${isPaused ? 'var(--tg-theme-button-color, #5288c1)' : 'transparent'};">
             <div class="setting-info">
                 <div class="setting-name">${t('settings.pause')}</div>
                 <div class="setting-desc">${isPaused ? t('settings.pause_on') : t('settings.pause_desc')}</div>
@@ -1807,80 +1807,70 @@ window.switchModalTab = function(tab) {
     const isAnalytics = (tab === 'analytics');
     const lang = localStorage.getItem('lang') || 'ru';
 
-    // 1. Стили кнопок вкладок
-    const settingsBtn = document.getElementById('tab-settings-btn');
-    const analyticsBtn = document.getElementById('tab-analytics-btn');
-    if (settingsBtn && analyticsBtn) {
+    // Стили кнопок
+    const sBtn = document.getElementById('tab-settings-btn');
+    const aBtn = document.getElementById('tab-analytics-btn');
+    if (sBtn && aBtn) {
         if (isAnalytics) {
-            analyticsBtn.classList.add('btn-primary'); analyticsBtn.classList.remove('btn-secondary');
-            analyticsBtn.style.background = ''; analyticsBtn.style.border = 'none';
-            settingsBtn.classList.add('btn-secondary'); settingsBtn.classList.remove('btn-primary');
-            settingsBtn.style.background = 'transparent'; settingsBtn.style.border = '1px solid #555';
+            aBtn.classList.add('btn-primary'); aBtn.classList.remove('btn-secondary');
+            aBtn.style.background = ''; aBtn.style.border = 'none';
+            sBtn.classList.add('btn-secondary'); sBtn.classList.remove('btn-primary');
+            sBtn.style.background = 'transparent'; sBtn.style.border = '1px solid #555';
         } else {
-            settingsBtn.classList.add('btn-primary'); settingsBtn.classList.remove('btn-secondary');
-            settingsBtn.style.background = ''; settingsBtn.style.border = 'none';
-            analyticsBtn.classList.add('btn-secondary'); analyticsBtn.classList.remove('btn-primary');
-            analyticsBtn.style.background = 'transparent'; analyticsBtn.style.border = '1px solid #555';
+            sBtn.classList.add('btn-primary'); sBtn.classList.remove('btn-secondary');
+            sBtn.style.background = ''; sBtn.style.border = 'none';
+            aBtn.classList.add('btn-secondary'); aBtn.classList.remove('btn-primary');
+            aBtn.style.background = 'transparent'; aBtn.style.border = '1px solid #555';
         }
-        // Перевод кнопок
-        settingsBtn.textContent = lang === 'en' ? '⚙️ Management' : '⚙️ Управление';
-        analyticsBtn.textContent = lang === 'en' ? '📊 Analytics' : '📊 Аналитика';
+        sBtn.textContent = lang === 'en' ? '⚙️ Management' : '⚙️ Управление';
+        aBtn.textContent = lang === 'en' ? '📊 Analytics' : '📊 Аналитика';
     }
 
-    // 2. Функция для скрытия/показа целых секций
-    const toggleEl = (el, show) => { if(el) el.style.display = show ? 'block' : 'none'; };
-    const toggleFlex = (el, show) => { if(el) el.style.display = show ? 'flex' : 'none'; };
-
-    // Находим все нужные контейнеры
-    const periodBtns = document.querySelector('.chart-period-switch');
-    const chartTitle = document.getElementById('chart-title');
-    const charts = document.querySelectorAll('.modal-chart-wrap');
-    const settingsContainer = document.getElementById('settings-toggles');
-    const settingsHint = document.getElementById('settings-hint');
-    const customTextsBtn = document.getElementById('custom-texts-open-btn');
-    
-    // Заголовки "Категории" и "Топ нарушителей"
-    let catTitle = null, topTitle = null;
-    document.querySelectorAll('h4').forEach(h => {
-        if (h.textContent.includes('Категории') || h.textContent.includes('Categories')) catTitle = h;
-        if (h.textContent.includes('Топ нарушителей') || h.textContent.includes('Top violators')) topTitle = h;
-    });
-    
-    const violatorsList = document.getElementById('violators-list');
+    // Функция скрытия/показа
+    const setDisplay = (selector, displayVal) => {
+        document.querySelectorAll(selector).forEach(el => el.style.display = displayVal);
+    };
 
     if (isAnalytics) {
-        // --- РЕЖИМ АНАЛИТИКИ ---
         // Скрываем настройки
-        toggleEl(settingsContainer, false);
-        toggleEl(settingsHint, false);
-        toggleEl(customTextsBtn, false);
-        if (customTextsBtn && customTextsBtn.parentElement) toggleEl(customTextsBtn.parentElement, false);
-        // Скрываем заголовок "Настройки модерации"
-        document.querySelectorAll('.settings-title').forEach(el => toggleEl(el, false));
+        setDisplay('#settings-toggles', 'none');
+        setDisplay('#settings-hint', 'none');
+        setDisplay('#custom-texts-open-btn', 'none');
+        if (document.getElementById('custom-texts-open-btn')?.parentNode) {
+            document.getElementById('custom-texts-open-btn').parentNode.style.display = 'none';
+        }
+        document.querySelectorAll('.settings-title, h4').forEach(el => {
+            if(el.textContent.includes('Настройки') || el.textContent.includes('Тексты')) el.style.display = 'none';
+        });
 
         // Показываем аналитику
-        toggleEl(chartTitle, true);
-        charts.forEach(el => toggleEl(el, true));
-        toggleFlex(periodBtns, true);
-        toggleEl(catTitle, true);
-        toggleEl(topTitle, true);
-        toggleFlex(violatorsList, true);
+        setDisplay('#chart-title', 'block');
+        setDisplay('.modal-chart-wrap', 'block');
+        setDisplay('.chart-period-switch', 'flex'); // Кнопки 7/30/90
+        setDisplay('#violators-list', 'flex');
+        document.querySelectorAll('h4').forEach(el => {
+            if(el.textContent.includes('Категории') || el.textContent.includes('Топ')) el.style.display = 'block';
+        });
     } else {
-        // --- РЕЖИМ УПРАВЛЕНИЯ ---
         // Показываем настройки
-        toggleEl(settingsContainer, true);
-        toggleEl(settingsHint, true);
-        toggleEl(customTextsBtn, true);
-        if (customTextsBtn && customTextsBtn.parentElement) toggleEl(customTextsBtn.parentElement, true);
-        document.querySelectorAll('.settings-title').forEach(el => toggleEl(el, true));
+        setDisplay('#settings-toggles', 'block');
+        setDisplay('#settings-hint', 'block');
+        setDisplay('#custom-texts-open-btn', 'block');
+        if (document.getElementById('custom-texts-open-btn')?.parentNode) {
+            document.getElementById('custom-texts-open-btn').parentNode.style.display = 'block';
+        }
+        document.querySelectorAll('.settings-title, h4').forEach(el => {
+            if(el.textContent.includes('Настройки') || el.textContent.includes('Тексты')) el.style.display = 'block';
+        });
 
-        // Скрываем ВСЮ аналитику (графики, кнопки 7/30/90, категории, топ)
-        toggleEl(chartTitle, false);
-        charts.forEach(el => toggleEl(el, false));
-        toggleFlex(periodBtns, false);
-        toggleEl(catTitle, false);
-        toggleEl(topTitle, false);
-        toggleFlex(violatorsList, false);
+        // Скрываем аналитику
+        setDisplay('#chart-title', 'none');
+        setDisplay('.modal-chart-wrap', 'none');
+        setDisplay('.chart-period-switch', 'none'); // Прячем кнопки 7/30/90
+        setDisplay('#violators-list', 'none');
+        document.querySelectorAll('h4').forEach(el => {
+            if(el.textContent.includes('Категории') || el.textContent.includes('Топ')) el.style.display = 'none';
+        });
     }
 };;
 
