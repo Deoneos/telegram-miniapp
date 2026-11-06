@@ -333,6 +333,15 @@ function renderSettings(s) {
 
         container.innerHTML =
         items.map(it => `
+<div class="setting-row" style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; display: flex; flex-direction: column; gap: 10px;">
+                <div class="setting-label" style="margin-bottom: 5px;">👥 Делегированные админы</div>
+                <div id="admins-list-container" style="margin-bottom: 10px;">Загрузка...</div>
+                <button onclick="loadChatAdmins(currentChartChatId)" class="btn btn-secondary" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--tg-theme-hint-color); background: transparent; color: var(--tg-theme-text-color); cursor: pointer;">
+                    🔄 Обновить список
+                </button>
+                <div style="font-size: 0.8em; color: #888; text-align: center;">Чтобы добавить админов, напишите <code>/sync_admins</code> в самом чате.</div>
+            </div>
+
             <div class="setting-row" style="margin-bottom: 12px; padding: 12px; border-radius: 12px; background: var(--tg-theme-secondary-bg-color, #232e3c);">
                 <div class="setting-info">
                     <div class="setting-name">${it.label}</div>
@@ -346,14 +355,7 @@ function renderSettings(s) {
             </div>
         `).join('')
         
-            <div class="setting-row" style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; display: flex; flex-direction: column; gap: 10px;">
-                <div class="setting-label" style="margin-bottom: 5px;">👥 Делегированные админы</div>
-                <div id="admins-list-container" style="margin-bottom: 10px;">Загрузка...</div>
-                <button onclick="loadChatAdmins(currentChartChatId)" class="btn btn-secondary" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--tg-theme-hint-color); background: transparent; color: var(--tg-theme-text-color); cursor: pointer;">
-                    🔄 Обновить список
-                </button>
-                <div style="font-size: 0.8em; color: #888; text-align: center;">Чтобы добавить админов, напишите <code>/sync_admins</code> в самом чате.</div>
-            </div>
+            
 + `
             <div class="setting-row" style="margin-top: 20px;">
                 <div class="setting-info">
