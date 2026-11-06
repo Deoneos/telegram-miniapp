@@ -1915,34 +1915,54 @@ function updateTabLabels() {
 async function loadChatAdmins(chatId) {
     const container = document.getElementById('admins-list-container');
     if (!container || !chatId) return;
-    
+
     container.innerHTML = `<p style="text-align: center; color: #888;">Загрузка...</p>`;
-    
-    try {
-        const resp = await fetch(`${API_BASE}/api/chat/${chatId}/admins?user_id=${user.id}`);
-        if (!resp.ok) throw new Error('HTTP ' + resp.status);
-        const data = await resp.json();
-        
-        if (!data.ok || !Array.isArray(data.admins) || data.admins.length === 0) {
-            container.innerHTML = `<p style="text-align: center; color: #888; font-size: 14px;">Нет делегированных админов.<br>Напишите <code>/sync_admins</code> в чате, чтобы подтянуть их из Telegram.</p>`;
-            return;
-        }
-        
-        let html = '';
-        data.admins.forEach(adm => {
-            html += `
-                <div class="setting-row" style="margin-bottom: 8px;">
-                    <div class="setting-info">
-                        <div class="setting-label">ID: ${adm.user_id}</div>
+
+    // Пробуем сначала основной API (Amvera), затем резервный (VPS)
+    const urls = [
+        `${API_BASE}/api/chat/${chatId}/admins?user_id=${user.id}`,
+        `${API_BACKUP}/api/chat/${chatId}/admins?user_id=${user.id}`
+    ];
+
+    let lastError = null;
+
+    for (const url of urls) {
+        try {
+            const resp = await fetch(url);
+            // Если 404 (эндпоинта нет) или 5xx — пробуем следующий URL
+            if (resp.status === 404 || resp.status >= 500) {
+                lastError = new Error(`HTTP ${resp.status}`);
+                continue; 
+            }
+            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+            
+            const data = await resp.json();
+            if (!data.ok || !Array.isArray(data.admins) || data.admins.length === 0) {
+                container.innerHTML = `<p style="text-align: center; color: #888; font-size: 14px;">Нет делегированных админов.<br>Напишите <code>/sync_admins</code> в чате...</p>`;
+                return;
+            }
+            
+            let html = '';
+            data.admins.forEach(adm => {
+                html += `
+                    <div class="setting-row" style="margin-bottom: 8px;">
+                        <div class="setting-info">
+                            <div class="setting-label">ID: ${adm.user_id}</div>
+                        </div>
+                        <button onclick="removeChatAdmin(${chatId}, ${adm.user_id})" style="background: #e74c3c; border: none; color: white; padding: 4px 8px; border-radius: 4px; cursor: pointer;">Удалить</button>
                     </div>
-                    <button onclick="removeChatAdmin(${chatId}, ${adm.user_id})" style="background: #e74c3c; border: none; color: white; padding: 4px 8px; border-radius: 4px; cursor: pointer;">Удалить</button>
-                </div>
-            `;
-        });
-        container.innerHTML = html;
-    } catch (e) {
-        container.innerHTML = `<p style="color: #e74c3c; text-align: center;">Ошибка: ${e.message}</p>`;
+                `;
+            });
+            container.innerHTML = html;
+            return; // Успех, выходим
+        } catch (e) {
+            lastError = e;
+            // Продолжаем цикл и пробуем следующий URL
+        }
     }
+
+    // Если оба URL не сработали
+    container.innerHTML = `<p style="color: #e74c3c; text-align: center;">Ошибка: ${lastError.message}</p>`;
 }
 
 window.loadChatAdmins = loadChatAdmins;
