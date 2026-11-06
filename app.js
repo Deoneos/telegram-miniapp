@@ -345,7 +345,16 @@ function renderSettings(s) {
                 
             </div>
         `).join('')
-        + `
+        
+            <div class="setting-row" style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; display: flex; flex-direction: column; gap: 10px;">
+                <div class="setting-label" style="margin-bottom: 5px;">👥 Делегированные админы</div>
+                <div id="admins-list-container" style="margin-bottom: 10px;">Загрузка...</div>
+                <button onclick="loadChatAdmins(currentChartChatId)" class="btn btn-secondary" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--tg-theme-hint-color); background: transparent; color: var(--tg-theme-text-color); cursor: pointer;">
+                    🔄 Обновить список
+                </button>
+                <div style="font-size: 0.8em; color: #888; text-align: center;">Чтобы добавить админов, напишите <code>/sync_admins</code> в самом чате.</div>
+            </div>
++ `
             <div class="setting-row" style="margin-top: 20px;">
                 <div class="setting-info">
                     <div class="setting-label">${t('settings.ml_enabled')}</div>
@@ -1920,3 +1929,55 @@ function updateTabLabels() {
     if (sBtn) sBtn.textContent = lang === 'en' ? '⚙️ Management' : '⚙️ Управление';
     if (aBtn) aBtn.textContent = lang === 'en' ? '📊 Analytics' : '📊 Аналитика';
 }
+
+// ===== УПРАВЛЕНИЕ АДМИНАМИ =====
+async function loadChatAdmins(chatId) {
+    const container = document.getElementById('admins-list-container');
+    if (!container) return;
+    
+    container.innerHTML = `<p style="text-align: center; color: #888;">Загрузка...</p>`;
+    
+    try {
+        const resp = await fetch(`${API_BASE}/api/chat/${chatId}/admins?user_id=${user.id}`);
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        const data = await resp.json();
+        
+        if (!data.ok || data.admins.length === 0) {
+            container.innerHTML = `<p style="text-align: center; color: #888; font-size: 14px;">Нет делегированных админов.<br>Напишите <code>/sync_admins</code> в чате, чтобы подтянуть их из Telegram.</p>`;
+            return;
+        }
+        
+        let html = '';
+        data.admins.forEach(adm => {
+            html += `
+                <div class="setting-row" style="margin-bottom: 8px;">
+                    <div class="setting-info">
+                        <div class="setting-label">ID: ${adm.user_id}</div>
+                    </div>
+                    <button onclick="removeChatAdmin(${chatId}, ${adm.user_id})" style="background: #e74c3c; border: none; color: white; padding: 4px 8px; border-radius: 4px; cursor: pointer;">Удалить</button>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+    } catch (e) {
+        container.innerHTML = `<p style="color: #e74c3c; text-align: center;">Ошибка: ${e.message}</p>`;
+    }
+}
+
+window.removeChatAdmin = async function(chatId, targetId) {
+    if (!confirm('Удалить этого админа?')) return;
+    try {
+        const resp = await fetch(`${API_BASE}/api/chat/${chatId}/admins/remove`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: user.id, target_id: targetId })
+        });
+        if (resp.ok) {
+            loadChatAdmins(chatId);
+        } else {
+            alert('Ошибка удаления (возможно, вы не владелец).');
+        }
+    } catch (e) {
+        alert('Ошибка сети');
+    }
+};
