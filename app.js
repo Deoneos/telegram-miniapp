@@ -1,8 +1,8 @@
 // ===== API URL =====
-const API_BASE = 'https://telegram-bot-zakharsakharov.msk1.amvera.tech';
+const API_BASE = 'https://api.kustos.ru';
 
 // === API FAILOVER (Client-side) ===
-const API_BACKUP = 'https://api.kustos.ru';
+const API_BACKUP = 'https://telegram-bot-zakharsakharov.msk1.amvera.tech';
 (function() {
     const origFetch = window.fetch.bind(window);
     const TIMEOUT_MS = 3000;
