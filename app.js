@@ -305,6 +305,7 @@ async function loadChatSettings(chatId) {
         if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
         const data = await resp.json();
         renderSettings(data.settings || {});
+        loadChatAdmins(chatId);
     } catch (e) {
         console.error('loadChatSettings error:', e);
         container.innerHTML = `<p class="violators-empty">${t('settings.error')}</p>`;
@@ -331,53 +332,52 @@ function renderSettings(s) {
     const ghostTrigger = s.ghost_trigger || 0;
     const isPaused = s.paused_until && new Date(s.paused_until) > new Date();
 
-        container.innerHTML =
-        items.map(it => `
-<div class="setting-row" style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; display: flex; flex-direction: column; gap: 10px;">
-                <div class="setting-label" style="margin-bottom: 5px;">👥 Делегированные админы</div>
-                <div id="admins-list-container" style="margin-bottom: 10px;">Загрузка...</div>
-                <button onclick="loadChatAdmins(currentChartChatId)" class="btn btn-secondary" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--tg-theme-hint-color); background: transparent; color: var(--tg-theme-text-color); cursor: pointer;">
-                    🔄 Обновить список
-                </button>
-                <div style="font-size: 0.8em; color: #888; text-align: center;">Чтобы добавить админов, напишите <code>/sync_admins</code> в самом чате.</div>
-            </div>
+    // Блок делегированных админов — ОДИН раз, вне items.map
+    const adminsBlock = `
+        <div class="setting-row" style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; display: flex; flex-direction: column; gap: 10px;">
+            <div class="setting-label" style="margin-bottom: 5px;">👥 Делегированные админы</div>
+            <div id="admins-list-container" style="margin-bottom: 10px;">Загрузка...</div>
+            <button onclick="loadChatAdmins(currentChartChatId)" class="btn btn-secondary" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--tg-theme-hint-color); background: transparent; color: var(--tg-theme-text-color); cursor: pointer;">
+                🔄 Обновить список
+            </button>
+            <div style="font-size: 0.8em; color: #888; text-align: center;">Чтобы добавить админов, напишите <code>/sync_admins</code> в самом чате.</div>
+        </div>
+    `;
 
-            <div class="setting-row" style="margin-bottom: 12px; padding: 12px; border-radius: 12px; background: var(--tg-theme-secondary-bg-color, #232e3c);">
-                <div class="setting-info">
-                    <div class="setting-name">${it.label}</div>
-                    <div class="setting-desc">${it.desc}</div>
-                </div>
-                <label class="switch">
-                    <input type="checkbox" data-key="${it.key}" ${s[it.key] ? 'checked' : ''}>
-                    <span class="slider"></span>
-                </label>
-                
+    const togglesBlock = items.map(it => `
+        <div class="setting-row" style="margin-bottom: 12px; padding: 12px; border-radius: 12px; background: var(--tg-theme-secondary-bg-color, #232e3c);">
+            <div class="setting-info">
+                <div class="setting-name">${it.label}</div>
+                <div class="setting-desc">${it.desc}</div>
             </div>
-        `).join('')
-        
-            
-+ `
-            <div class="setting-row" style="margin-top: 20px;">
-                <div class="setting-info">
-                    <div class="setting-label">${t('settings.ml_enabled')}</div>
-                    <div class="setting-desc">${t('settings.ml_desc')}</div>
-                </div>
-                <label class="switch">
-                    <input type="checkbox" data-key="ml_enabled" ${s.ml_enabled ? 'checked' : ''}>
-                    <span class="slider"></span>
-                </label>
-            </div>
-            <div class="setting-row" style="margin-top: 20px;">
-                <div class="setting-info">
-                    <div class="setting-label">${t('settings.silent_mode')}</div>
-                    <div class="setting-desc">${t('settings.silent_mode_desc')}</div>
-                </div>
-                <label class="switch">
-                    <input type="checkbox" data-key="silent_mode" ${s.silent_mode == 1 ? 'checked' : ''}>
-                    <span class="slider"></span>
-                </label>
-            </div>
+            <label class="switch">
+                <input type="checkbox" data-key="${it.key}" ${s[it.key] ? 'checked' : ''}>
+                <span class="slider"></span>
+            </label>
+        </div>
+    `).join('');
 
+    container.innerHTML = adminsBlock + togglesBlock + `
+        <div class="setting-row" style="margin-top: 20px;">
+            <div class="setting-info">
+                <div class="setting-label">${t('settings.ml_enabled')}</div>
+                <div class="setting-desc">${t('settings.ml_desc')}</div>
+            </div>
+            <label class="switch">
+                <input type="checkbox" data-key="ml_enabled" ${s.ml_enabled ? 'checked' : ''}>
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div class="setting-row" style="margin-top: 20px;">
+            <div class="setting-info">
+                <div class="setting-label">${t('settings.silent_mode')}</div>
+                <div class="setting-desc">${t('settings.silent_mode_desc')}</div>
+            </div>
+            <label class="switch">
+                <input type="checkbox" data-key="silent_mode" ${s.silent_mode == 1 ? 'checked' : ''}>
+                <span class="slider"></span>
+            </label>
+        </div>
 
         <div class="setting-row" style="margin-bottom: 12px; padding: 12px; border-radius: 12px; background: var(--tg-theme-secondary-bg-color, #232e3c);">
             <div class="setting-info">
@@ -390,7 +390,7 @@ function renderSettings(s) {
                 <span class="slider"></span>
             </label>
         </div>
-        <!-- Выключить бота -->
+
         <div class="setting-row" style="margin-top: 16px; border: 1px solid ${isPaused ? 'var(--tg-theme-button-color, #5288c1)' : 'transparent'};">
             <div class="setting-info">
                 <div class="setting-name">${t('settings.pause')}</div>
@@ -402,11 +402,9 @@ function renderSettings(s) {
             </label>
         </div>
 
-        <!-- Расписание модерации -->
         <div class="schedule-settings-block" id="schedule-settings-block" style="margin-top: 16px; padding: 16px; background: var(--tg-theme-secondary-bg-color, #232e3c); border-radius: 12px;">
             <div class="setting-name" style="margin-bottom: 8px;">${t('settings.schedule_title')}</div>
             <div class="setting-desc" style="margin-bottom: 12px; font-size: 13px; color: var(--tg-theme-hint-color, #999);">${t('settings.schedule_desc')}</div>
-            
             <div style="display: flex; gap: 12px; margin-bottom: 12px;">
                 <div style="flex: 1;">
                     <label style="font-size: 12px; color: var(--tg-theme-hint-color, #999); display: block; margin-bottom: 4px;">${t('settings.schedule_start')}</label>
@@ -417,20 +415,17 @@ function renderSettings(s) {
                     <input type="time" id="mod-end-time" value="${s.moderation_end_time || '23:59'}" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid var(--tg-theme-hint-color, #444); background: var(--tg-theme-bg-color, #17212b); color: var(--tg-theme-text-color, #fff);">
                 </div>
             </div>
-            
             <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; font-size: 14px; cursor: pointer;">
                 <input type="checkbox" id="mod-weekends" ${s.moderation_weekends == 1 ? 'checked' : ''}>
                 ${t('settings.schedule_weekends')}
             </label>
-            
             <button type="button" class="btn btn-secondary" id="save-schedule-btn" style="width: 100%; padding: 10px; font-size: 14px;">
                 💾 ${t('settings.schedule_save')}
             </button>
         </div>
-        
+
         <div class="ghost-settings-block ${ghostEnabled ? 'active' : ''}" id="ghost-settings-block">
             <label class="ghost-label">${t('settings.ghost_trigger')}</label>
-            
             <label class="ghost-radio">
                 <input type="radio" name="ghost_trigger" value="0" ${ghostTrigger == 0 ? 'checked' : ''}>
                 ${t('settings.ghost_trigger_all')}
@@ -447,7 +442,7 @@ function renderSettings(s) {
                 <input type="radio" name="ghost_trigger" value="3" ${ghostTrigger == 3 ? 'checked' : ''}>
                 ${t('settings.ghost_trigger_media')}
             </label>
-            
+
             <label class="ghost-label">${t('settings.ghost_timeout')}</label>
             <div class="ghost-timeout-row" style="display: flex; gap: 8px; align-items: center; justify-content: flex-start;">
                 <div style="display: flex; align-items: center; gap: 4px;">
@@ -478,13 +473,8 @@ function renderSettings(s) {
                 ${t('settings.ghost_save')}
             </button>
         </div>
-        `;
+    `;
 
-    // Обычные тумблеры
-    
-    
-
-    
     // Обработчик смены режима
     const modeSelect = container.querySelector('#bot-mode-select');
     if (modeSelect) {
@@ -513,7 +503,7 @@ function renderSettings(s) {
         });
     }
 
-container.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+    container.querySelectorAll('input[type="checkbox"]').forEach(cb => {
         if (cb.dataset.key !== 'ghost_enabled') {
             cb.addEventListener('change', () => toggleSetting(cb));
         }
@@ -531,7 +521,6 @@ container.querySelectorAll('input[type="checkbox"]').forEach(cb => {
                 pausedUntil = "2099-12-31T23:59:59+03:00";
             }
 
-            // Показываем тост сразу (оптимистично)
             const msg = document.createElement('div');
             msg.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#2ecc71;color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,0.3);';
             msg.textContent = pauseCb.checked ? t('settings.pause_toast_on') : t('settings.pause_toast_off');
@@ -544,14 +533,11 @@ container.querySelectorAll('input[type="checkbox"]').forEach(cb => {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ user_id: user.id, key: 'paused_until', value: pausedUntil })
                 });
-                
                 if (!resp.ok) {
                     throw new Error('HTTP ' + resp.status);
                 }
-                // Никаких перезагрузок! UI уже обновился.
             } catch (e) {
                 console.error('pause error:', e);
-                // Если ошибка — возвращаем тумблер назад и показываем алерт
                 pauseCb.checked = !pauseCb.checked;
                 alert('⚠️ Ошибка сети. Попробуйте еще раз.');
             }
@@ -634,13 +620,6 @@ async function saveGhostSettings() {
         });
         if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
 
-        // Сохраняем триггер
-        resp = await fetch(`${API_BASE}/api/chat/${chatId}/settings`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ user_id: user.id, key: 'ghost_trigger', value: ghostTrigger })
-        });
-        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
 
         // Тост
         const msg = document.createElement('div');
@@ -1935,7 +1914,7 @@ function updateTabLabels() {
 // ===== УПРАВЛЕНИЕ АДМИНАМИ =====
 async function loadChatAdmins(chatId) {
     const container = document.getElementById('admins-list-container');
-    if (!container) return;
+    if (!container || !chatId) return;
     
     container.innerHTML = `<p style="text-align: center; color: #888;">Загрузка...</p>`;
     
@@ -1944,7 +1923,7 @@ async function loadChatAdmins(chatId) {
         if (!resp.ok) throw new Error('HTTP ' + resp.status);
         const data = await resp.json();
         
-        if (!data.ok || data.admins.length === 0) {
+        if (!data.ok || !Array.isArray(data.admins) || data.admins.length === 0) {
             container.innerHTML = `<p style="text-align: center; color: #888; font-size: 14px;">Нет делегированных админов.<br>Напишите <code>/sync_admins</code> в чате, чтобы подтянуть их из Telegram.</p>`;
             return;
         }
@@ -1965,6 +1944,8 @@ async function loadChatAdmins(chatId) {
         container.innerHTML = `<p style="color: #e74c3c; text-align: center;">Ошибка: ${e.message}</p>`;
     }
 }
+
+window.loadChatAdmins = loadChatAdmins;
 
 window.removeChatAdmin = async function(chatId, targetId) {
     if (!confirm('Удалить этого админа?')) return;
