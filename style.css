@@ -517,6 +517,14 @@ a.btn:visited {
     transition: 0.2s;
 }
 
+.period-btn.locked {
+    opacity: 0.55;
+}
+
+.period-btn.locked::before {
+    content: '🔒 ';
+}
+
 .period-btn.active {
     background: var(--tg-theme-button-color, #5288c1);
     color: var(--tg-theme-button-text-color, #ffffff);

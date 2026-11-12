@@ -46,6 +46,17 @@ const tg = window.Telegram.WebApp;
 
 
 
+
+function updatePeriodButtons() {
+    document.querySelectorAll('.period-btn').forEach((btn) => {
+        const days = parseInt(btn.getAttribute('data-days'));
+        if (!days) return;
+        const locked = days > FREE_ANALYTICS_DAYS && !userPremiumActive;
+        btn.classList.toggle('locked', locked);
+        btn.title = locked ? 'Доступно в Кустос Premium' : '';
+    });
+}
+
 async function loadPremiumStatus() {
     const btn = document.getElementById('modal-premium');
     const user = tg.initDataUnsafe && tg.initDataUnsafe.user;
@@ -55,6 +66,7 @@ async function loadPremiumStatus() {
         if (!resp.ok) return;
         const s = await resp.json();
         userPremiumActive = !!s.is_premium;
+        updatePeriodButtons();
         if (s.is_premium) {
             const until = s.premium_until
                 ? new Date(s.premium_until).toLocaleDateString('ru-RU')
@@ -932,6 +944,7 @@ window.loadTimelineChart = loadTimelineChart;
 // ===== ЗАПУСК =====
 loadGroups();
 loadPremiumStatus();
+updatePeriodButtons();
 tg.ready();
 initTheme();
 
