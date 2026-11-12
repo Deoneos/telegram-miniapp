@@ -45,6 +45,32 @@ const API_BACKUP = 'https://telegram-bot-zakharsakharov.msk1.amvera.tech';
 const tg = window.Telegram.WebApp;
 
 
+
+async function loadPremiumStatus() {
+    const btn = document.getElementById('modal-premium');
+    const user = tg.initDataUnsafe && tg.initDataUnsafe.user;
+    if (!btn || !user) return;
+    try {
+        const resp = await fetch(`${API_BASE}/api/premium/status?owner_id=${user.id}`);
+        if (!resp.ok) return;
+        const s = await resp.json();
+        if (s.is_premium) {
+            const until = s.premium_until
+                ? new Date(s.premium_until).toLocaleDateString('ru-RU')
+                : '';
+            btn.textContent = until ? `⭐ Premium до ${until}` : '⭐ Premium активен';
+            btn.disabled = true;
+            btn.style.opacity = '0.65';
+        } else {
+            btn.textContent = `⭐ Оплатить Premium — ${s.price_stars || 100} ⭐`;
+            btn.disabled = false;
+            btn.style.opacity = '1';
+        }
+    } catch (e) {
+        console.error('loadPremiumStatus:', e);
+    }
+}
+
 // ===== PREMIUM (Telegram Stars) =====
 async function buyPremium() {
     const user = tg.initDataUnsafe && tg.initDataUnsafe.user;
@@ -67,6 +93,7 @@ async function buyPremium() {
 
         tg.openInvoice(data.link, (status) => {
             if (status === 'paid') {
+                loadPremiumStatus();
                 (tg.showAlert || alert)('✅ Premium активирован! Спасибо за поддержку 💚');
             } else if (status === 'failed') {
                 (tg.showAlert || alert)('Оплата не прошла. Попробуйте ещё раз.');
@@ -309,6 +336,7 @@ function openGroupModal(chatId, title, chatType, deleted, bans, violations, adde
     loadCategoriesChart(chatId, savedDays);
     loadTopViolators(chatId);
     loadChatSettings(chatId);
+    loadPremiumStatus();
     if (typeof switchModalTab === 'function') switchModalTab('settings');
     document.getElementById('modal-overlay').style.display = 'flex';
 }
