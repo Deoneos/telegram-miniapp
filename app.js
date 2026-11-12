@@ -44,6 +44,40 @@ const API_BACKUP = 'https://telegram-bot-zakharsakharov.msk1.amvera.tech';
 // ===== ИНИЦИАЛИЗАЦИЯ =====
 const tg = window.Telegram.WebApp;
 
+
+// ===== PREMIUM (Telegram Stars) =====
+async function buyPremium() {
+    const user = tg.initDataUnsafe && tg.initDataUnsafe.user;
+    if (!user) {
+        (tg.showAlert || alert)('Откройте приложение из Telegram');
+        return;
+    }
+    if (!tg.openInvoice) {
+        (tg.showAlert || alert)('Обновите Telegram — оплата в приложении недоступна');
+        return;
+    }
+    try {
+        const resp = await fetch(`${API_BASE}/api/premium/invoice-link`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ owner_id: user.id })
+        });
+        const data = await resp.json();
+        if (!resp.ok || !data.link) throw new Error(data.detail || 'invoice link не получен');
+
+        tg.openInvoice(data.link, (status) => {
+            if (status === 'paid') {
+                (tg.showAlert || alert)('✅ Premium активирован! Спасибо за поддержку 💚');
+            } else if (status === 'failed') {
+                (tg.showAlert || alert)('Оплата не прошла. Попробуйте ещё раз.');
+            }
+        });
+    } catch (e) {
+        console.error('buyPremium:', e);
+        (tg.showAlert || alert)('Не удалось открыть оплату. Попробуйте позже.');
+    }
+}
+
 function openAddToGroup() {
     const url = 'https://t.me/ANTI_SPAM_MWKbot?startgroup=true';
     if (tg && tg.openTelegramLink) {
