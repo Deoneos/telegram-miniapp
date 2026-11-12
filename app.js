@@ -55,6 +55,13 @@ function updatePeriodButtons() {
         btn.classList.toggle('locked', locked);
         btn.title = locked ? 'Доступно в Кустос Premium' : '';
     });
+
+    const ml = document.querySelector('input[data-key="ml_enabled"]');
+    if (ml) {
+        ml.disabled = !userPremiumActive;
+        const row = ml.closest('.setting-row');
+        if (row) row.style.opacity = userPremiumActive ? '1' : '0.6';
+    }
 }
 
 async function loadPremiumStatus() {
@@ -438,11 +445,11 @@ function renderSettings(s) {
     container.innerHTML = adminsBlock + togglesBlock + `
         <div class="setting-row" style="margin-top: 20px;">
             <div class="setting-info">
-                <div class="setting-label">${t('settings.ml_enabled')}</div>
+                <div class="setting-label">${t('settings.ml_enabled')}${userPremiumActive ? '' : ' 🔒'}</div>
                 <div class="setting-desc">${t('settings.ml_desc')}</div>
             </div>
             <label class="switch">
-                <input type="checkbox" data-key="ml_enabled" ${s.ml_enabled ? 'checked' : ''}>
+                <input type="checkbox" data-key="ml_enabled" ${s.ml_enabled ? 'checked' : ''} ${userPremiumActive ? '' : 'disabled'}>
                 <span class="slider"></span>
             </label>
         </div>
@@ -654,6 +661,8 @@ function renderSettings(s) {
     if (saveScheduleBtn) {
         saveScheduleBtn.addEventListener('click', saveScheduleSettings);
     }
+
+    updatePeriodButtons();
 }
 
 
