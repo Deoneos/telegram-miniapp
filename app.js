@@ -54,6 +54,7 @@ async function loadPremiumStatus() {
         const resp = await fetch(`${API_BASE}/api/premium/status?owner_id=${user.id}`);
         if (!resp.ok) return;
         const s = await resp.json();
+        userPremiumActive = !!s.is_premium;
         if (s.is_premium) {
             const until = s.premium_until
                 ? new Date(s.premium_until).toLocaleDateString('ru-RU')
@@ -70,6 +71,9 @@ async function loadPremiumStatus() {
         console.error('loadPremiumStatus:', e);
     }
 }
+
+let userPremiumActive = false;
+const FREE_ANALYTICS_DAYS = 14;
 
 // ===== PREMIUM (Telegram Stars) =====
 async function buyPremium() {
@@ -908,6 +912,12 @@ document.querySelectorAll('.period-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
         e.preventDefault();
         const days = parseInt(btn.getAttribute('data-days'));
+        if (days > FREE_ANALYTICS_DAYS && !userPremiumActive) {
+            (tg.showAlert || alert)(
+                `Периоды больше ${FREE_ANALYTICS_DAYS} дней доступны в Кустос Premium ⭐\n\n7 и 14 дней — бесплатно.`
+            );
+            return;
+        }
         const savedDays = parseInt(localStorage.getItem('chart_days')) || 30;
         if (days === savedDays) return;
         if (currentChartChatId !== null) {
@@ -921,6 +931,7 @@ window.loadTimelineChart = loadTimelineChart;
 
 // ===== ЗАПУСК =====
 loadGroups();
+loadPremiumStatus();
 tg.ready();
 initTheme();
 
