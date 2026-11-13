@@ -41,6 +41,22 @@ const API_BACKUP = 'https://telegram-bot-zakharsakharov.msk1.amvera.tech';
 // === END API FAILOVER ===
 
 
+
+// Премиум-эндпоинты могут отсутствовать на основном API — пробуем резервный
+async function apiCallJson(path, init) {
+    let lastError = null;
+    for (const base of [API_BASE, API_BACKUP]) {
+        try {
+            const resp = await fetch(base + path, init);
+            if (resp.ok) return await resp.json();
+            lastError = new Error(`HTTP ${resp.status} (${base})`);
+        } catch (e) {
+            lastError = e;
+        }
+    }
+    throw lastError || new Error('API недоступен');
+}
+
 // ===== ИНИЦИАЛИЗАЦИЯ =====
 const tg = window.Telegram.WebApp;
 
@@ -69,9 +85,7 @@ async function loadPremiumStatus() {
     const user = tg.initDataUnsafe && tg.initDataUnsafe.user;
     if (!btn || !user) return;
     try {
-        const resp = await fetch(`${API_BASE}/api/premium/status?owner_id=${user.id}`);
-        if (!resp.ok) return;
-        const s = await resp.json();
+        const s = await apiCallJson(`/api/premium/status?owner_id=${user.id}`);
         userPremiumActive = !!s.is_premium;
         updatePeriodButtons();
         if (s.is_premium) {
@@ -106,13 +120,12 @@ async function buyPremium() {
         return;
     }
     try {
-        const resp = await fetch(`${API_BASE}/api/premium/invoice-link`, {
+        const data = await apiCallJson('/api/premium/invoice-link', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ owner_id: user.id })
         });
-        const data = await resp.json();
-        if (!resp.ok || !data.link) throw new Error(data.detail || 'invoice link не получен');
+        if (!data.link) throw new Error(data.detail || 'invoice link не получен');
 
         tg.openInvoice(data.link, (status) => {
             if (status === 'paid') {
